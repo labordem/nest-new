@@ -11,6 +11,7 @@ export interface UserJwtPayload {
   id: number;
   email: string;
   roles: Role[];
+  isConfirmed: boolean;
 }
 
 export interface EmailJwtPayload {
@@ -35,10 +36,9 @@ export class AuthService {
   async sendConfirmationEmail(
     account: RegisterDto | Account,
     emailToken: string,
-  ): Promise<unknown> {
+  ): Promise<boolean> {
     const confirmEmailUrl = `${environment.pwaConfirmEmailUrl}/${emailToken}`;
-
-    return this.mailerService.sendMail({
+    const { accepted } = (await this.mailerService.sendMail({
       to: account.email,
       subject: `${environment.projectName} - Confirm your email`,
       template: 'confirm-email',
@@ -48,16 +48,17 @@ export class AuthService {
         projectName: environment.projectName,
         confirmEmailUrl,
       },
-    });
+    })) as { accepted: string[] };
+
+    return !!accepted;
   }
 
   async sendResetPasswordEmail(
     account: Account,
     emailToken: string,
-  ): Promise<unknown> {
+  ): Promise<boolean> {
     const resetPasswordUrl = `${environment.pwaResetPasswordUrl}/${account.id}/${emailToken}`;
-
-    return this.mailerService.sendMail({
+    const { accepted } = (await this.mailerService.sendMail({
       to: account.email,
       subject: `${environment.projectName} - Reset your password`,
       template: 'reset-password',
@@ -67,11 +68,13 @@ export class AuthService {
         projectName: environment.projectName,
         resetPasswordUrl,
       },
-    });
+    })) as { accepted: string[] };
+
+    return !!accepted;
   }
 
   async sendPasswordChangedEmail(account: Account): Promise<unknown> {
-    return this.mailerService.sendMail({
+    const { accepted } = (await this.mailerService.sendMail({
       to: account.email,
       subject: `${environment.projectName} - Password changed`,
       template: 'password-changed',
@@ -80,7 +83,9 @@ export class AuthService {
         lastName: account.lastName,
         projectName: environment.projectName,
       },
-    });
+    })) as { accepted: string[] };
+
+    return !!accepted;
   }
 
   createUserToken(account: Account): string {
@@ -88,6 +93,7 @@ export class AuthService {
       id: account.id,
       email: account.email,
       roles: account.roles,
+      isConfirmed: account.isConfirmed,
     };
     return sign(payload, environment.apiUserJwtKey, {
       expiresIn: '7d',
@@ -112,11 +118,11 @@ export class AuthService {
   }
 
   getPayloadFromForgotPasswordToken(
-    account: Account,
+    accountWithPassword: Account,
     token: string,
   ): ForgotPasswordJwtPayload {
-    const createdAtString = account.createdAt.toISOString();
-    const secret = `${account.password}-${createdAtString}`;
+    const createdAtString = accountWithPassword.createdAt.toISOString();
+    const secret = `${accountWithPassword.password}-${createdAtString}`;
 
     return verify(token, secret) as ForgotPasswordJwtPayload;
   }

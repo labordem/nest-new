@@ -3,7 +3,6 @@ import {
   Body,
   Controller,
   Get,
-  InternalServerErrorException,
   NotFoundException,
   Param,
   Post,
@@ -45,14 +44,12 @@ export class AuthController {
     if (!isPasswordCorrect) {
       throw new UnauthorizedException('Invalid password');
     }
-    const { password, ...accountWithoutPassword } = accountWithPassword;
-    const userToken = this.authService.createUserToken(
-      accountWithoutPassword as Account,
-    );
+    const { password, ...account } = accountWithPassword;
+    const userToken = this.authService.createUserToken(account as Account);
 
     return {
       jwt: userToken,
-      account: accountWithoutPassword as Account,
+      account: account as Account,
     };
   }
 
@@ -83,14 +80,14 @@ export class AuthController {
   async resendConfirmationEmail(
     @Param('email') email: string,
   ): Promise<ProcessedDto> {
-    // tester si fait pas trop souvent
-
     const account = await this.accountsService.findByEmail(email);
-    if (account) {
-      const emailToken = this.authService.createEmailToken(email);
-      void this.authService.sendConfirmationEmail(account, emailToken);
+    if (!account) {
+      throw new NotFoundException('Email not found');
     }
-    // End user should not know if email exists
+    // TODO: Spam protection
+    const emailToken = this.authService.createEmailToken(email);
+    void this.authService.sendConfirmationEmail(account, emailToken);
+
     return { isProcessed: true };
   }
 
@@ -124,11 +121,13 @@ export class AuthController {
     @Param('email') email: string,
   ): Promise<ProcessedDto> {
     const account = await this.accountsService.findByEmail(email, true);
-    if (account) {
-      const emailToken = this.authService.createForgotPasswordToken(account);
-      void this.authService.sendResetPasswordEmail(account, emailToken);
+    if (!account) {
+      throw new NotFoundException('Email not found');
     }
-    // End user should not know if email exists
+    // TODO: Spam protection
+    const emailToken = this.authService.createForgotPasswordToken(account);
+    void this.authService.sendResetPasswordEmail(account, emailToken);
+
     return { isProcessed: true };
   }
 
@@ -138,19 +137,16 @@ export class AuthController {
     @Param('token') token: string,
     @Body() resetPasswordDto: ResetPasswordDto,
   ): Promise<unknown> {
-    const account = await this.accountsService.findOne(id, true);
-    if (!account) {
+    const accountWithPassword = await this.accountsService.findOne(id, true);
+    if (!accountWithPassword) {
       throw new NotFoundException('Account not found');
     }
-    const payload = this.authService.getPayloadFromForgotPasswordToken(
-      account,
+    this.authService.getPayloadFromForgotPasswordToken(
+      accountWithPassword,
       token,
     );
-    if (!payload) {
-      throw new InternalServerErrorException('Server error');
-    }
     const isSamePassword = await this.authService.isPasswordCorrect(
-      account.password,
+      accountWithPassword.password,
       resetPasswordDto.newPassword,
     );
     if (isSamePassword) {
@@ -158,8 +154,8 @@ export class AuthController {
         'New password must be different from current',
       );
     }
-    await this.accountsService.updatePassword(
-      account.id,
+    const account = await this.accountsService.updatePassword(
+      accountWithPassword.id,
       resetPasswordDto.newPassword,
     );
     void this.authService.sendPasswordChangedEmail(account);

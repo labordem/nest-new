@@ -30,9 +30,11 @@ export class AuthGuard implements CanActivate {
     if (!payload?.id) {
       return false;
     }
-    // Account was found in the database, so check if Account has sufficient Role
-    const hasAnyRole = !!payload.roles;
-    if (!hasAnyRole) {
+    // Token signature is valid, so check if payload meets the requirements
+    if (!payload.isConfirmed) {
+      return false;
+    }
+    if (!payload.roles) {
       return false;
     }
     const isAdmin = !!payload.roles.find((role) => role === 'admin');
@@ -40,7 +42,7 @@ export class AuthGuard implements CanActivate {
       return true;
     }
     const hasRole = payload.roles.some(
-      (role) => !!requiredRoles.find((item) => item === role),
+      (role) => !!requiredRoles.find((requiredRole) => requiredRole === role),
     );
 
     return hasRole;

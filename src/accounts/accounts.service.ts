@@ -14,10 +14,14 @@ export class AccountsService {
     private readonly accountRepository: Repository<Account>,
   ) {}
 
-  create(createAccountDto: CreateAccountDto): Promise<Account> {
-    const account = this.accountRepository.create(createAccountDto);
+  async create(createAccountDto: CreateAccountDto): Promise<Account> {
+    const createdAccount = this.accountRepository.create(createAccountDto);
+    const accountWithPassword = await this.accountRepository.save(
+      createdAccount,
+    );
+    const { password, ...account } = accountWithPassword;
 
-    return this.accountRepository.save(account);
+    return account as Account;
   }
 
   findAll(): Promise<Account[]> {
@@ -29,13 +33,11 @@ export class AccountsService {
     id: number,
     withHashedPassword = false,
   ): Promise<Account | undefined> {
-    const account = await this.accountRepository
+    return this.accountRepository
       .createQueryBuilder('account')
       .where('account.id = :id', { id })
       .addSelect(withHashedPassword ? 'account.password' : '')
       .getOne();
-
-    return account;
   }
 
   async update(
@@ -46,9 +48,13 @@ export class AccountsService {
     if (!toUpdate) {
       throw new NotFoundException(`Account #${id} not found`);
     }
-    const updated = { ...toUpdate, ...updateAccountDto } as Account;
+    const updatedAccount = { ...toUpdate, ...updateAccountDto };
+    const accountWithPassword = await this.accountRepository.save(
+      updatedAccount,
+    );
+    const { password, ...account } = accountWithPassword;
 
-    return this.accountRepository.save(updated);
+    return account as Account;
   }
 
   delete(id: number): Promise<DeleteResult> {
@@ -60,13 +66,11 @@ export class AccountsService {
     email: string,
     withHashedPassword = false,
   ): Promise<Account | undefined> {
-    const account = await this.accountRepository
+    return this.accountRepository
       .createQueryBuilder('account')
       .where('LOWER(account.email) = LOWER(:email)', { email })
       .addSelect(withHashedPassword ? 'account.password' : '')
       .getOne();
-
-    return account;
   }
 
   async updatePassword(id: number, newPassword: string): Promise<Account> {
@@ -74,12 +78,16 @@ export class AccountsService {
     if (!toUpdate) {
       throw new NotFoundException(`Account #${id} not found`);
     }
-
-    const updated = {
+    const updatedAccount = {
       ...toUpdate,
+      isConfirmed: true,
       password: await hash(newPassword),
     } as Account;
+    const accountWithPassword = await this.accountRepository.save(
+      updatedAccount,
+    );
+    const { password, ...account } = accountWithPassword;
 
-    return this.accountRepository.save(updated);
+    return account as Account;
   }
 }
