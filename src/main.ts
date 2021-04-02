@@ -7,8 +7,10 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import {
   DocumentBuilder,
   SwaggerCustomOptions,
+  SwaggerDocumentOptions,
   SwaggerModule,
 } from '@nestjs/swagger';
+import * as helmet from 'helmet';
 
 import { version } from '../package.json';
 import { AppModule } from './app.module';
@@ -30,21 +32,27 @@ const {
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   const reflector = app.get(Reflector);
+  // Helmet must be the first app.use
+  app.use(helmet());
+  // NestJS execution order : Middleware -> Interceptors -> Route Handler -> Interceptors -> Exception Filter
   app.setGlobalPrefix(globalPrefix);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useGlobalGuards(new AuthGuard(reflector));
-  // NestJS execution order : Middleware -> Interceptors -> Route Handler -> Interceptors -> Exception Filter
   app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
   app.useGlobalInterceptors(new LoggingInterceptor());
   app.useGlobalFilters(new AllExceptionFilter());
 
   if (nodeEnv === 'development') {
     const apiTitle = apiName[0].toUpperCase() + apiName.slice(1);
-    const options = new DocumentBuilder()
+    const config = new DocumentBuilder()
       .addBearerAuth({ in: 'header', type: 'http' })
       .setTitle(apiTitle)
       .setVersion(version)
       .build();
+    const options: SwaggerDocumentOptions = {
+      operationIdFactory: (controllerKey: string, methodKey: string) =>
+        methodKey,
+    };
     const uiOptions: SwaggerCustomOptions = {
       swaggerOptions: {
         persistAuthorization: true,
@@ -57,7 +65,7 @@ async function bootstrap(): Promise<void> {
         .swagger-ui .scheme-container { padding: 10px; }
       `,
     };
-    const document = SwaggerModule.createDocument(app, options);
+    const document = SwaggerModule.createDocument(app, config, options);
     SwaggerModule.setup(`${globalPrefix}/doc`, app, document, uiOptions);
 
     app.enableCors();
