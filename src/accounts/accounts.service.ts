@@ -24,12 +24,8 @@ export class AccountsService {
     return account as Account;
   }
 
-  findAll(): Promise<Account[]> {
-    return this.accountRepository.find();
-  }
-
-  /** @param withHashedPassword WARNING ! Never return a password to end user, even hashed */
-  async findOne(
+  /** @param withHashedPassword WARNING ! Never return password */
+  async findOneById(
     id: number,
     withHashedPassword = false,
   ): Promise<Account | undefined> {
@@ -38,6 +34,22 @@ export class AccountsService {
       .where('account.id = :id', { id })
       .addSelect(withHashedPassword ? 'account.password' : '')
       .getOne();
+  }
+
+  /** @param withHashedPassword WARNING ! Never return password */
+  async findOneByEmail(
+    email: string,
+    withHashedPassword = false,
+  ): Promise<Account | undefined> {
+    return this.accountRepository
+      .createQueryBuilder('account')
+      .where('LOWER(account.email) = LOWER(:email)', { email })
+      .addSelect(withHashedPassword ? 'account.password' : '')
+      .getOne();
+  }
+
+  findAll(): Promise<Account[]> {
+    return this.accountRepository.find();
   }
 
   async update(
@@ -59,18 +71,6 @@ export class AccountsService {
 
   delete(id: number): Promise<DeleteResult> {
     return this.accountRepository.delete({ id });
-  }
-
-  /** @param withHashedPassword WARNING ! Never return a password to end user, even hashed */
-  async findByEmail(
-    email: string,
-    withHashedPassword = false,
-  ): Promise<Account | undefined> {
-    return this.accountRepository
-      .createQueryBuilder('account')
-      .where('LOWER(account.email) = LOWER(:email)', { email })
-      .addSelect(withHashedPassword ? 'account.password' : '')
-      .getOne();
   }
 
   async updatePassword(id: number, newPassword: string): Promise<Account> {

@@ -1,8 +1,4 @@
-import {
-  ClassSerializerInterceptor,
-  Logger,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import {
   DocumentBuilder,
@@ -14,8 +10,9 @@ import * as helmet from 'helmet';
 
 import { version } from '../package.json';
 import { AppModule } from './app.module';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { RolesGuard } from './auth/guards/roles.guard';
 import { AllExceptionFilter } from './common/filters/all-exception.filter';
-import { AuthGuard } from './common/guards/auth.guard';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { environment } from './environment';
 
@@ -35,17 +32,17 @@ async function bootstrap(): Promise<void> {
   // Helmet must be the first app.use
   app.use(helmet());
   // NestJS execution order : Middleware -> Interceptors -> Route Handler -> Interceptors -> Exception Filter
+  app.useGlobalGuards(new JwtAuthGuard(reflector));
+  app.useGlobalGuards(new RolesGuard(reflector));
   app.setGlobalPrefix(globalPrefix);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  app.useGlobalGuards(new AuthGuard(reflector));
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
   app.useGlobalInterceptors(new LoggingInterceptor());
   app.useGlobalFilters(new AllExceptionFilter());
 
   if (nodeEnv === 'development') {
     const apiTitle = apiName[0].toUpperCase() + apiName.slice(1);
     const config = new DocumentBuilder()
-      .addBearerAuth({ in: 'header', type: 'http' })
+      .addSecurity('bearer', { type: 'http', scheme: 'bearer' })
       .setTitle(apiTitle)
       .setVersion(version)
       .build();

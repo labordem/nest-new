@@ -7,18 +7,18 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { DeleteResult } from 'typeorm';
 
-import { Roles } from '../common/decorators/roles.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 import { AccountsService } from './accounts.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { Account, Role } from './entities/account.entity';
 
 @ApiTags('accounts')
-@ApiBearerAuth()
-@Roles(Role.Admin)
+@ApiSecurity('bearer')
+@Roles(Role.Manager)
 @Controller('accounts')
 export class AccountsController {
   constructor(private readonly accountsService: AccountsService) {}
@@ -35,7 +35,7 @@ export class AccountsController {
 
   @Get(':id')
   findOne(@Param('id') id: number): Promise<Account | undefined> {
-    return this.accountsService.findOne(id);
+    return this.accountsService.findOneById(id);
   }
 
   @Patch(':id')
