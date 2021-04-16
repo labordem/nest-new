@@ -40,20 +40,16 @@ You can run this project in watch/debug mode in fully containerized environment,
 **Example :**
 
 ```bash
-docker-compose --env-file .env.development up
-# or if you have Docker AND Node.js installed you can use short command :
+# with docker only
+docker-compose -f docker-compose.dev.yml --env-file .env.development up --build -V
+docker-compose -f docker-compose.dev.yml --env-file .env.development up
+
+# if you have Docker AND Node.js installed you can use short commands :
+npm run docker:build
 npm run docker
 ```
 
-When you add a npm package to your project you need to force your container to fully build.
-
-**Example :**
-
-```bash
-docker-compose --env-file .env.development up --build -V
-# or if you have Docker AND Node.js installed you can use short command :
-npm run docker:build
-```
+> When you add a npm package to your project you need to force your container to build.
 
 ### VSCode debugger
 
@@ -68,12 +64,20 @@ To run your app in production mode you need to create an `.env` file (not follow
 
 You can run this project in production mode in container, to do so you just need [Docker](https://docs.docker.com/get-docker/).
 
-**Example :**
+**Example 1 : Node.js container alone**
 
 ```bash
 # with docker only
 docker build --target production -t nest-new .
 docker run --env-file ./.env -p 3333:3333 --env PORT=3333 --name nest-new nest-new
+```
+
+**Example 2 : Production environment**
+
+```bash
+# with docker only
+docker-compose -f docker-compose.prod.yml --env-file .env up --scale api=4 --build -V
+docker-compose -f docker-compose.prod.yml --env-file .env up --scale api=4
 
 # if you have Docker AND Node.js installed you can use short commands :
 npm run docker:build:prod

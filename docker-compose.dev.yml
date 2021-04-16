@@ -7,8 +7,7 @@ volumes:
   pgdata:
 
 services:
-  app:
-    container_name: ${API_NAME}
+  api:
     build:
       context: .
       target: development
@@ -28,7 +27,6 @@ services:
       - db
 
   db:
-    container_name: ${API_NAME}-db
     image: postgres:13.1-alpine
     command: -p ${DB_PORT}
     environment:
@@ -44,7 +42,6 @@ services:
       - network
 
   admin:
-    container_name: ${API_NAME}-admin
     image: michalhosna/adminer
     ports:
       - ${ADMIN_PORT}:8080
