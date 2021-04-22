@@ -178,6 +178,19 @@ git push --follow-tags
 
 ## Deploy it
 
+> By default the ORM synchronizes your models with the database, which avoids migration. This is very dangerous in production as this can result in data loss. So when you deploy a production version for the first time it is advisable to disable this option.
+>
+> **Example :** in your `src/ormconfig.ts`
+>
+> ```typescript
+> const connectionOptions: ConnectionOptions = {
+>   ...
+>   // must be set to false once the first release deployed.
+>   synchronize: false,
+>   ...
+> };
+> ```
+
 ### Heroku
 
 - Create an app on [Heroku](https://dashboard.heroku.com/apps)

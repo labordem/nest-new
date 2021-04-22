@@ -2,7 +2,6 @@
 
 # environment
 .env
-/pgdata
 /docs
 
 # compiled output
