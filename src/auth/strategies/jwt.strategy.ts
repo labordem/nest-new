@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 import { AccountsService } from '../../accounts/accounts.service';

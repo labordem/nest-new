@@ -70,5 +70,6 @@ module.exports = {
       },
     ],
     'no-void': ['error', { allowAsStatement: true }],
+    'import/no-extraneous-dependencies': 'off',
   },
 };

@@ -5,7 +5,7 @@
       "type": "node",
       "request": "attach",
       "name": "attach",
-      "remoteRoot": "/usr/src/app",
+      "remoteRoot": "/app",
       "localRoot": "${workspaceFolder}",
       "protocol": "inspector",
       "port": 9229,
