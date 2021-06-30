@@ -29,21 +29,21 @@ export class AuthService {
   ) {}
 
   async login(loginDto: LoginDto): Promise<Account> {
-    const accountWithPassword = await this.accountsService.findOneByEmail(
+    const accountWithCredentials = await this.accountsService.findOneByEmail(
       loginDto.email,
       true,
     );
-    if (!accountWithPassword) {
+    if (!accountWithCredentials) {
       throw new UnauthorizedException('Invalid email');
     }
     const isPasswordCorrect = await this.isPasswordCorrect(
-      accountWithPassword.password,
+      accountWithCredentials.password,
       loginDto.password,
     );
     if (!isPasswordCorrect) {
       throw new UnauthorizedException('Invalid password');
     }
-    const { password, ...account } = accountWithPassword;
+    const { password, email, ...account } = accountWithCredentials;
 
     return account as Account;
   }
@@ -57,7 +57,7 @@ export class AuthService {
       throw new BadRequestException('Email already exists');
     }
     const account = await this.accountsService.create(createAccountDto);
-    void this.sendConfirmationEmail(account);
+    void this.sendConfirmationEmail(createAccountDto.email, account);
 
     return account;
   }
@@ -65,7 +65,7 @@ export class AuthService {
   async resendConfirmationEmail(email: string): Promise<ProcessedDto> {
     const account = await this.accountsService.findOneByEmail(email);
     if (account) {
-      void this.sendConfirmationEmail(account);
+      void this.sendConfirmationEmail(email, account);
     }
 
     return { isProcessed: true };
@@ -73,7 +73,7 @@ export class AuthService {
 
   async confirmEmail(emailToken: string): Promise<Account> {
     const payload = this.getPayloadFromEmailToken(emailToken);
-    const account = await this.accountsService.findOneByEmail(payload.email);
+    const account = await this.accountsService.findOneById(payload.id);
     if (!account) {
       throw new UnauthorizedException('Invalid email');
     }
@@ -89,14 +89,14 @@ export class AuthService {
   }
 
   async forgotPassword(email: string): Promise<ProcessedDto> {
-    const accountWithPassword = await this.accountsService.findOneByEmail(
+    const accountWithCredentials = await this.accountsService.findOneByEmail(
       email,
       true,
     );
-    if (!accountWithPassword) {
+    if (!accountWithCredentials) {
       throw new UnauthorizedException('Invalid email');
     }
-    void this.sendResetPasswordEmail(accountWithPassword);
+    void this.sendResetPasswordEmail(accountWithCredentials);
 
     return { isProcessed: true };
   }
@@ -106,16 +106,16 @@ export class AuthService {
     token: string,
     resetPasswordDto: ResetPasswordDto,
   ): Promise<Account> {
-    const accountWithPassword = await this.accountsService.findOneById(
+    const accountWithCredentials = await this.accountsService.findOneById(
       id,
       true,
     );
-    if (!accountWithPassword) {
+    if (!accountWithCredentials) {
       throw new NotFoundException('Account not found');
     }
-    this.getPayloadFromForgotPasswordToken(accountWithPassword, token);
+    this.getPayloadFromForgotPasswordToken(accountWithCredentials, token);
     const isSamePassword = await this.isPasswordCorrect(
-      accountWithPassword.password,
+      accountWithCredentials.password,
       resetPasswordDto.newPassword,
     );
     if (isSamePassword) {
@@ -123,11 +123,12 @@ export class AuthService {
         'New password must be different from current',
       );
     }
+    const { email } = accountWithCredentials;
     const account = await this.accountsService.updatePassword(
-      accountWithPassword.id,
+      accountWithCredentials.id,
       resetPasswordDto.newPassword,
     );
-    void this.sendPasswordChangedEmail(account);
+    void this.sendPasswordChangedEmail(email, account);
 
     return account;
   }
@@ -135,7 +136,7 @@ export class AuthService {
   createUserToken(account: Account): string {
     const payload: UserJwtPayload = {
       id: account.id,
-      email: account.email,
+      createdAt: account.createdAt,
       roles: account.roles,
       isConfirmed: account.isConfirmed,
     };
@@ -145,11 +146,11 @@ export class AuthService {
   }
 
   private getPayloadFromForgotPasswordToken(
-    accountWithPassword: Account,
+    accountWithCredentials: Account,
     token: string,
   ): ForgotPasswordJwtPayload {
-    const createdAtString = accountWithPassword.createdAt.toISOString();
-    const secret = `${accountWithPassword.password}-${createdAtString}`;
+    const createdAtString = accountWithCredentials.createdAt.toISOString();
+    const secret = `${accountWithCredentials.password}-${createdAtString}`;
 
     return verify(token, secret) as ForgotPasswordJwtPayload;
   }
@@ -168,27 +169,36 @@ export class AuthService {
   }
 
   private createConfirmEmailToken(account: Account): string {
-    const payload: EmailJwtPayload = { email: account.email };
+    const payload: EmailJwtPayload = {
+      id: account.id,
+      createdAt: account.createdAt,
+    };
     return sign(payload, environment.apiEmailJwtSecret, {
       expiresIn: environment.apiEmailJwtExpirationTime,
     });
   }
 
-  private createResetPasswordToken(accountWithPassword: Account): string {
-    const payload: ForgotPasswordJwtPayload = { id: accountWithPassword.id };
-    const createdAtString = accountWithPassword.createdAt.toISOString();
-    const secret = `${accountWithPassword.password}-${createdAtString}`;
+  private createResetPasswordToken(accountWithCredentials: Account): string {
+    const payload: ForgotPasswordJwtPayload = {
+      id: accountWithCredentials.id,
+      createdAt: accountWithCredentials.createdAt,
+    };
+    const createdAtString = accountWithCredentials.createdAt.toISOString();
+    const secret = `${accountWithCredentials.password}-${createdAtString}`;
 
     return sign(payload, secret, {
       expiresIn: environment.apiEmailJwtExpirationTime,
     });
   }
 
-  private async sendConfirmationEmail(account: Account): Promise<ProcessedDto> {
+  private async sendConfirmationEmail(
+    email: string,
+    account: Account,
+  ): Promise<ProcessedDto> {
     const emailToken = this.createConfirmEmailToken(account);
     const confirmEmailUrl = `${environment.pwaConfirmEmailUrl}/${emailToken}`;
     const { accepted } = (await this.mailerService.sendMail({
-      to: account.email,
+      to: email,
       subject: `${environment.projectName} - Confirm your email`,
       template: 'confirm-email',
       context: {
@@ -203,17 +213,17 @@ export class AuthService {
   }
 
   private async sendResetPasswordEmail(
-    accountWithPassword: Account,
+    accountWithCredentials: Account,
   ): Promise<ProcessedDto> {
-    const emailToken = this.createResetPasswordToken(accountWithPassword);
-    const resetPasswordUrl = `${environment.pwaResetPasswordUrl}/${accountWithPassword.id}/${emailToken}`;
+    const emailToken = this.createResetPasswordToken(accountWithCredentials);
+    const resetPasswordUrl = `${environment.pwaResetPasswordUrl}/${accountWithCredentials.id}/${emailToken}`;
     const { accepted } = (await this.mailerService.sendMail({
-      to: accountWithPassword.email,
+      to: accountWithCredentials.email,
       subject: `${environment.projectName} - Reset your password`,
       template: 'reset-password',
       context: {
-        firstName: accountWithPassword.firstName,
-        lastName: accountWithPassword.lastName,
+        firstName: accountWithCredentials.firstName,
+        lastName: accountWithCredentials.lastName,
         projectName: environment.projectName,
         resetPasswordUrl,
       },
@@ -223,10 +233,11 @@ export class AuthService {
   }
 
   private async sendPasswordChangedEmail(
+    email: string,
     account: Account,
   ): Promise<ProcessedDto> {
     const { accepted } = (await this.mailerService.sendMail({
-      to: account.email,
+      to: email,
       subject: `${environment.projectName} - Password changed`,
       template: 'password-changed',
       context: {

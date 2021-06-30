@@ -2,7 +2,7 @@ import { IsEmail, IsString, Length } from 'class-validator';
 
 export class CreateAccountDto {
   /**
-   * Login email
+   * Login email.
    * @example 'johndoe@email.com'
    */
   @IsEmail()
@@ -10,7 +10,7 @@ export class CreateAccountDto {
   email!: string;
 
   /**
-   * User first name
+   * User first name.
    * @example 'John'
    */
   @IsString()
@@ -18,7 +18,7 @@ export class CreateAccountDto {
   firstName!: string;
 
   /**
-   * User last name
+   * User last name.
    * @example 'Doe'
    */
   @IsString()
@@ -26,7 +26,7 @@ export class CreateAccountDto {
   lastName!: string;
 
   /**
-   * Login password
+   * Login password.
    * @example 'JohnDoePass123'
    */
   @IsString()

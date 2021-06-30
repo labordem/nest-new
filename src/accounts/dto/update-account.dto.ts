@@ -4,4 +4,5 @@ import { CreateAccountDto } from './create-account.dto';
 
 export class UpdateAccountDto extends OmitType(CreateAccountDto, [
   'password',
+  'email',
 ]) {}

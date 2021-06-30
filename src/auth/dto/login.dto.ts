@@ -2,7 +2,7 @@ import { IsEmail, IsString, MaxLength } from 'class-validator';
 
 export class LoginDto {
   /**
-   * Login email
+   * Login email.
    * @example 'johndoe@email.com'
    */
   @IsEmail()
@@ -10,7 +10,7 @@ export class LoginDto {
   email!: string;
 
   /**
-   * Login password
+   * Login password.
    * @example 'JohnDoePass123'
    */
   @IsString()

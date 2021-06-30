@@ -1,11 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'argon2';
 import { DeleteResult, Repository } from 'typeorm';
 
+import { environment } from '../environment';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
-import { Account } from './entities/account.entity';
+import { Account, Role } from './entities/account.entity';
 
 @Injectable()
 export class AccountsService {
@@ -14,37 +15,44 @@ export class AccountsService {
     private readonly accountRepository: Repository<Account>,
   ) {}
 
+  /** Create an user Account or an admin Account if admin email is used. */
   async create(createAccountDto: CreateAccountDto): Promise<Account> {
     const createdAccount = this.accountRepository.create(createAccountDto);
-    const accountWithPassword = await this.accountRepository.save(
+    if (createAccountDto.email === environment.apiAdminEmail) {
+      createdAccount.roles = [Role.Admin];
+      createdAccount.isConfirmed = true;
+    }
+    const accountWithCredentials = await this.accountRepository.save(
       createdAccount,
     );
-    const { password, ...account } = accountWithPassword;
+    const { password, email, ...account } = accountWithCredentials;
 
     return account as Account;
   }
 
-  /** @param withHashedPassword WARNING ! Never return password */
+  /** @param withCredentials WARNING ! Never return password or email. */
   async findOneById(
     id: number,
-    withHashedPassword = false,
+    withCredentials = false,
   ): Promise<Account | undefined> {
     return this.accountRepository
       .createQueryBuilder('account')
       .where('account.id = :id', { id })
-      .addSelect(withHashedPassword ? 'account.password' : '')
+      .addSelect(withCredentials ? 'account.password' : '')
+      .addSelect(withCredentials ? 'account.email' : '')
       .getOne();
   }
 
-  /** @param withHashedPassword WARNING ! Never return password */
+  /** @param withCredentials WARNING ! Never return password or email. */
   async findOneByEmail(
     email: string,
-    withHashedPassword = false,
+    withCredentials = false,
   ): Promise<Account | undefined> {
     return this.accountRepository
       .createQueryBuilder('account')
       .where('LOWER(account.email) = LOWER(:email)', { email })
-      .addSelect(withHashedPassword ? 'account.password' : '')
+      .addSelect(withCredentials ? 'account.password' : '')
+      .addSelect(withCredentials ? 'account.email' : '')
       .getOne();
   }
 
@@ -56,15 +64,12 @@ export class AccountsService {
     id: number,
     updateAccountDto: UpdateAccountDto,
   ): Promise<Account> {
-    const toUpdate = await this.accountRepository.findOne(id);
-    if (!toUpdate) {
-      throw new NotFoundException(`Account #${id} not found`);
-    }
+    const toUpdate = await this.accountRepository.findOneOrFail(id);
     const updatedAccount = { ...toUpdate, ...updateAccountDto };
-    const accountWithPassword = await this.accountRepository.save(
+    const accountWithCredentials = await this.accountRepository.save(
       updatedAccount,
     );
-    const { password, ...account } = accountWithPassword;
+    const { password, email, ...account } = accountWithCredentials;
 
     return account as Account;
   }
@@ -74,19 +79,16 @@ export class AccountsService {
   }
 
   async updatePassword(id: number, newPassword: string): Promise<Account> {
-    const toUpdate = await this.accountRepository.findOne(id);
-    if (!toUpdate) {
-      throw new NotFoundException(`Account #${id} not found`);
-    }
+    const toUpdate = await this.accountRepository.findOneOrFail(id);
     const updatedAccount = {
       ...toUpdate,
       isConfirmed: true,
       password: await hash(newPassword),
     } as Account;
-    const accountWithPassword = await this.accountRepository.save(
+    const accountWithCredentials = await this.accountRepository.save(
       updatedAccount,
     );
-    const { password, ...account } = accountWithPassword;
+    const { password, email, ...account } = accountWithCredentials;
 
     return account as Account;
   }

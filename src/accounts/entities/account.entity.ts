@@ -10,9 +10,9 @@ import {
 } from 'typeorm';
 
 export enum Role {
+  /** Software Editor Administrator, has all rights. */
   Admin = 'admin',
-  Manager = 'manager',
-  Employee = 'employee',
+  /** Applications end user. */
   User = 'user',
 }
 
@@ -28,14 +28,15 @@ export class Account {
   updatedAt!: Date;
 
   /**
-   * Account email
+   * Account email.
    * @example 'johndoe@email.com'
    */
-  @Column({ unique: true })
+  @ApiHideProperty()
+  @Column({ select: false, unique: true })
   email!: string;
 
   /**
-   * Account password hash
+   * Account password hash.
    * @example '$argon2i$v=19$m=16,t=2,p=1$RER6c24zYTFSQVZMZllCTA$Jn1399jd7Z2j/0VLzu07IA'
    */
   @ApiHideProperty()
@@ -43,15 +44,15 @@ export class Account {
   password!: string;
 
   /**
-   * A boolean that is true if Account email is confirmed
+   * A boolean that is true if Account email is confirmed.
    * @example false
    */
   @Column({ default: false })
   isConfirmed!: boolean;
 
   /**
-   * Account roles
-   * @example ['admin']
+   * Account roles.
+   * @example ```typescript ['admin']```
    */
   @Column({
     type: 'enum',
@@ -62,21 +63,21 @@ export class Account {
   roles!: Role[];
 
   /**
-   * Account first name
+   * Account first name.
    * @example 'John'
    */
   @Column()
   firstName!: string;
 
   /**
-   * Account last name
+   * Account last name.
    * @example 'Doe'
    */
   @Column()
   lastName!: string;
 
   /**
-   * Account avatar
+   * Account avatar.
    * @example 'https://your-domain.com/api/public/avatar1233.jpg'
    */
   @Column({ nullable: true })

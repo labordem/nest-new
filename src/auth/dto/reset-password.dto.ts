@@ -2,7 +2,7 @@ import { IsString, Length } from 'class-validator';
 
 export class ResetPasswordDto {
   /**
-   * New login password
+   * New login password.
    * @example 'JohnDoeNewPass1234'
    */
   @IsString()

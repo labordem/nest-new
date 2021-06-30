@@ -16,6 +16,7 @@ export const environment = {
   apiProtocol: process.env.API_PROTOCOL as string,
   apiHost: process.env.API_HOST as string,
   apiPort: parseInt((process.env.PORT || process.env.API_PORT) as string, 10),
+  apiAdminEmail: process.env.API_ADMIN_EMAIL as string,
   apiUserJwtSecret: process.env.API_USER_JWT_SECRET as string,
   apiUserJwtExpirationTime: process.env.API_USER_JWT_EXPIRATION_TIME as string,
   apiEmailJwtSecret: process.env.API_EMAIL_JWT_SECRET as string,

@@ -1,5 +1,5 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { NestFactory, Reflector } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import {
   DocumentBuilder,
   SwaggerCustomOptions,
@@ -10,8 +10,6 @@ import * as helmet from 'helmet';
 
 import { version } from '../package.json';
 import { AppModule } from './app.module';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
-import { RolesGuard } from './auth/guards/roles.guard';
 import { AllExceptionFilter } from './common/filters/all-exception.filter';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { environment } from './environment';
@@ -28,14 +26,11 @@ const {
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
-  const reflector = app.get(Reflector);
   // Helmet must be the first app.use
   app.use(helmet());
   // NestJS execution order : Middleware -> Interceptors -> Route Handler -> Interceptors -> Exception Filter
-  app.useGlobalGuards(new JwtAuthGuard(reflector));
-  app.useGlobalGuards(new RolesGuard(reflector));
   app.setGlobalPrefix(globalPrefix);
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalInterceptors(new LoggingInterceptor());
   app.useGlobalFilters(new AllExceptionFilter());
 
