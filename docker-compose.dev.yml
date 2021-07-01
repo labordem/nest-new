@@ -1,8 +1,8 @@
 version: '3.7'
 
 networks:
-  network:
-    name: ${API_NAME}
+  default:
+    name: ${PROJECT_NAME}
 
 volumes:
   pgdata:
@@ -23,7 +23,7 @@ services:
     environment:
       - DB_HOST=db
     networks:
-      - network
+      - default
     depends_on:
       - db
 
@@ -40,7 +40,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data:z
     networks:
-      - network
+      - default
 
   admin:
     image: michalhosna/adminer
@@ -55,4 +55,4 @@ services:
       ADMINER_AUTOLOGIN: 1
       ADMINER_NAME: ${API_NAME}
     networks:
-      - network
+      - default

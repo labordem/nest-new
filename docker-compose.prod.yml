@@ -1,23 +1,23 @@
 version: '3.7'
 
 networks:
-  network:
-    name: ${API_NAME}
+  default:
+    name: ${PROJECT_NAME}
 
 volumes:
   pgdata:
 
 services:
   reverse-proxy:
-    image: nginx:1.18.0-alpine
+    image: nginxinc/nginx-unprivileged:1.20.0-alpine
     volumes:
       - ./docker/reverse-proxy/nginx.conf:/etc/nginx/nginx.conf:z
       - ./docker/reverse-proxy/ssl:/etc/nginx/ssl:z
     ports:
-      - 80:80
+      - 80:8080
       - 443:443
     networks:
-      - network
+      - default
     depends_on:
       - api
 
@@ -32,7 +32,7 @@ services:
       - PORT=${API_PORT}
       - DB_HOST=db
     networks:
-      - network
+      - default
     depends_on:
       - db
 
@@ -47,4 +47,4 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data:z
     networks:
-      - network
+      - default
