@@ -3,7 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'argon2';
 import { DeleteResult, Repository } from 'typeorm';
 
+import { ProcessedDto } from '../common/dto/processed.dto';
 import { environment } from '../environment';
+import { Upload } from '../uploads/entities/upload.entity';
+import { UploadCategoryName } from '../uploads/models/upload-category.model';
+import { UploadsService } from '../uploads/uploads.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
 import { Account, Role } from './entities/account.entity';
@@ -13,6 +17,7 @@ export class AccountsService {
   constructor(
     @InjectRepository(Account)
     private readonly accountRepository: Repository<Account>,
+    private readonly uploadsService: UploadsService,
   ) {}
 
   /** Create an user Account or an admin Account if admin email is used. */
@@ -40,6 +45,7 @@ export class AccountsService {
       .where('account.id = :id', { id })
       .addSelect(withCredentials ? 'account.password' : '')
       .addSelect(withCredentials ? 'account.email' : '')
+      .leftJoinAndSelect('account.avatar', 'avatar')
       .getOne();
   }
 
@@ -53,6 +59,7 @@ export class AccountsService {
       .where('LOWER(account.email) = LOWER(:email)', { email })
       .addSelect(withCredentials ? 'account.password' : '')
       .addSelect(withCredentials ? 'account.email' : '')
+      .leftJoinAndSelect('account.avatar', 'avatar')
       .getOne();
   }
 
@@ -91,5 +98,37 @@ export class AccountsService {
     const { password, email, ...account } = accountWithCredentials;
 
     return account as Account;
+  }
+
+  async updateAvatar(id: number, file: Express.Multer.File): Promise<Upload> {
+    const avatar = await this.uploadsService.create(
+      file,
+      UploadCategoryName.Avatar,
+    );
+    const toUpdate = await this.accountRepository.findOneOrFail(id);
+    const updatedAccount = { ...toUpdate, avatar };
+    const accountWithPassword = await this.accountRepository.save(
+      updatedAccount,
+    );
+    const { password, ...account } = accountWithPassword;
+    const previousAvatar = toUpdate.avatar;
+    if (previousAvatar) {
+      void this.uploadsService.delete(previousAvatar.id);
+    }
+
+    return account.avatar;
+  }
+
+  async deleteAvatar(id: number): Promise<ProcessedDto> {
+    const toUpdate = await this.accountRepository.findOneOrFail(id);
+    const avatar = toUpdate?.avatar;
+    await this.accountRepository.update(id, {
+      avatar: undefined,
+    });
+    if (avatar) {
+      void this.uploadsService.delete(avatar.id);
+    }
+
+    return { isProcessed: true };
   }
 }

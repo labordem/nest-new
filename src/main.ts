@@ -1,5 +1,6 @@
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import {
   DocumentBuilder,
   SwaggerCustomOptions,
@@ -7,6 +8,7 @@ import {
   SwaggerModule,
 } from '@nestjs/swagger';
 import * as helmet from 'helmet';
+import { join } from 'path';
 
 import { version } from '../package.json';
 import { AppModule } from './app.module';
@@ -25,7 +27,7 @@ const {
 } = environment;
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   // Helmet must be the first app.use
   app.use(helmet());
   // NestJS execution order : Middleware -> Interceptors -> Route Handler -> Interceptors -> Exception Filter
@@ -33,6 +35,10 @@ async function bootstrap(): Promise<void> {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalInterceptors(new LoggingInterceptor());
   app.useGlobalFilters(new AllExceptionFilter());
+
+  app.useStaticAssets(join(__dirname, '..', '..', '/uploads/public/'), {
+    prefix: `/${globalPrefix}/uploads/public/`,
+  });
 
   if (nodeEnv === 'development') {
     const apiTitle = apiName[0].toUpperCase() + apiName.slice(1);
@@ -58,7 +64,12 @@ async function bootstrap(): Promise<void> {
       `,
     };
     const document = SwaggerModule.createDocument(app, config, options);
-    SwaggerModule.setup(`${globalPrefix}/doc`, app, document, uiOptions);
+    SwaggerModule.setup(
+      `${globalPrefix ? `${globalPrefix}/doc` : '/doc'}`,
+      app,
+      document,
+      uiOptions,
+    );
 
     app.enableCors();
   }
@@ -67,7 +78,9 @@ async function bootstrap(): Promise<void> {
     Logger.log(`${apiName} run in ${nodeEnv} mode`);
     if (nodeEnv === 'development') {
       Logger.log(
-        `[doc] ${apiProtocol}://${apiHost}:${apiPort}/${globalPrefix}/doc`,
+        `[doc] ${apiProtocol}://${apiHost}:${apiPort}/${
+          globalPrefix ? `${globalPrefix}/doc` : 'doc'
+        }`,
       );
       Logger.log(`[admin] http://localhost:${adminPort}`);
     }

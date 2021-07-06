@@ -5,9 +5,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+import { Upload } from '../../uploads/entities/upload.entity';
 
 export enum Role {
   /** Software Editor Administrator, has all rights. */
@@ -76,12 +80,11 @@ export class Account {
   @Column()
   lastName!: string;
 
-  /**
-   * Account avatar.
-   * @example 'https://your-domain.com/api/public/avatar1233.jpg'
-   */
-  @Column({ nullable: true })
-  avatar?: string;
+  @JoinColumn()
+  @OneToOne(() => Upload, {
+    eager: true,
+  })
+  avatar?: Upload;
 
   @BeforeInsert()
   async prepareToInsert(): Promise<void> {

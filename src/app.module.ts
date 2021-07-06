@@ -6,6 +6,7 @@ import { AccountsModule } from './accounts/accounts.module';
 import { AuthModule } from './auth/auth.module';
 import { mailerOptions } from './mailerconfig';
 import * as connectionOptions from './ormconfig';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import * as connectionOptions from './ormconfig';
     MailerModule.forRoot(mailerOptions),
     AccountsModule,
     AuthModule,
+    UploadsModule,
   ],
 })
 export class AppModule {}
