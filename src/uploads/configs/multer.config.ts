@@ -1,8 +1,8 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { diskStorage } from 'multer';
 
+import { environment } from '../../environment';
 import {
   UploadCategory,
   UploadCategoryName,
@@ -13,9 +13,9 @@ import { uniqueFilenameGenerator } from './filename-generators.config';
 export const uploadCategories: UploadCategory[] = [
   {
     fieldName: UploadCategoryName.Avatar,
-    destination: 'uploads/public',
+    destination: environment.S3PublicBucketName,
     fileSizeLimit: 5 * 1000000, // 5 mb
-    maxWidthHeight: 720,
+    maxWidthHeight: 180,
     fileFilter: avatarFileFilter,
   },
 ];

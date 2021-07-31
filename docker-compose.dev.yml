@@ -22,6 +22,7 @@ services:
     env_file: ./.env.development
     environment:
       - DB_HOST=db
+      - S3_HOST=s3
     networks:
       - default
     depends_on:
@@ -38,7 +39,7 @@ services:
     ports:
       - ${DB_PORT}:${DB_PORT}
     volumes:
-      - pgdata:/var/lib/postgresql/data:z
+      - ./docker/db/data:/var/lib/postgresql/data:z
     networks:
       - default
 
@@ -56,3 +57,15 @@ services:
       ADMINER_NAME: ${API_NAME}
     networks:
       - default
+
+  s3:
+    image: localstack/localstack
+    ports:
+      - ${S3_PORT}:4566
+    environment:
+      - SERVICES=s3:4566
+      - DEFAULT_REGION=${S3_REGION}
+      - DATA_DIR=/tmp/localstack/data
+    volumes:
+      - ./docker/s3:/docker-entrypoint-initaws.d
+      - ./docker/s3/data:/tmp/localstack/data:z

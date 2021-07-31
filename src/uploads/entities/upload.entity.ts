@@ -18,51 +18,37 @@ export class Upload {
   updatedAt!: Date;
 
   /**
-   * Filename at the moment it has been uploaded
+   * Filename at the moment it has been uploaded.
    * @example 'avatar.jpg'
    */
   @Column()
   filename!: string;
 
   /**
-   * File path, must be prefixed by server host
+   * File path.
    * @example 'uploads/public/uuid.jpg'
    */
   @Column()
   path!: string;
 
   /**
-   * File size in bytes
+   * File size in bytes.
    * @example 2000000
    */
   @Column()
   size!: number;
 
   /**
-   * File mime type
+   * File mime type.
    * @example 'image/jpeg'
    */
   @Column()
   mimeType!: string;
 
   /**
-   * Resized file path, must be prefixed by server host
-   * @example 'uploads/public/uuid-thumb.jpg'
+   * S3 object unique key.
+   * @example 'uuid-avatar.jpg'
    */
   @Column()
-  thumbPath?: string;
-
-  /**
-   * Resized file size in bytes
-   * @example 2000000
-   */
-  @Column()
-  thumbSize?: number;
-
-  /**
-   * Resized file mime type
-   * @example 'image/jpeg'
-   */
-  @Column()
-  thumbMimeType?: string;
+  key!: string;
 }

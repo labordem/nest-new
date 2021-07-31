@@ -36,6 +36,14 @@ export const environment = {
   dbName: process.env.DB_NAME as string,
   // ADMIN (for development only)
   adminPort: parseInt(process.env.ADMIN_PORT as string, 10),
+  // S3
+  s3Protocol: process.env.S3_PROTOCOL as string,
+  s3Host: process.env.S3_HOST as string,
+  s3Port: process.env.S3_PORT as string,
+  s3Region: process.env.S3_REGION as string,
+  s3AccessKeyId: process.env.S3_ACCESS_KEY_ID as string,
+  s3SecretAccessKey: process.env.S3_SECRET_ACCESS_KEY as string,
+  S3PublicBucketName: process.env.S3_PUBLIC_BUCKET_NAME as string,
   // PWA
   pwaConfirmEmailUrl: process.env.PWA_CONFIRM_EMAIL_URL as string,
   pwaResetPasswordUrl: process.env.PWA_RESET_PASSWORD_URL as string,

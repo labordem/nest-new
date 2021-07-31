@@ -10,7 +10,7 @@ export class CreateUploadDto {
 
   /**
    * File path, must be prefixed by server host
-   * @example 'uploads/public/uuid.jpg'
+   * @example 'http://localhost:4566/public/770a333f-bdf9-4cd8-a41d-ff2bda07adb4.jpg'
    */
   @IsString()
   path!: string;
@@ -49,4 +49,11 @@ export class CreateUploadDto {
    */
   @IsString()
   thumbMimeType?: string;
+
+  /**
+   * S3 file unique key.
+   * @example '770a333f-bdf9-4cd8-a41d-ff2bda07adb4.jpg'
+   */
+  @IsString()
+  key?: string;
 }

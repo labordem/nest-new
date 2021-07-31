@@ -1,15 +1,37 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { S3 } from 'aws-sdk';
 import * as fs from 'fs';
 import * as sharp from 'sharp';
 import { Repository } from 'typeorm';
 
 import { ProcessedDto } from '../common/dto/processed.dto';
+import { environment } from '../environment';
 import { filenameWithSuffixGenerator } from './configs/filename-generators.config';
 import { uploadCategories } from './configs/multer.config';
 import { CreateUploadDto } from './dto/create-upload.dto';
 import { Upload } from './entities/upload.entity';
 import { UploadCategoryName } from './models/upload-category.model';
+
+const {
+  s3Protocol,
+  s3Host,
+  s3Port,
+  s3AccessKeyId,
+  s3SecretAccessKey,
+  s3Region,
+  S3PublicBucketName,
+} = environment;
+
+const s3 = new S3({
+  credentials: {
+    accessKeyId: s3AccessKeyId,
+    secretAccessKey: s3SecretAccessKey,
+  },
+  endpoint: `${s3Protocol}://${s3Host}:${s3Port}`,
+  s3ForcePathStyle: true,
+  region: s3Region,
+});
 
 @Injectable()
 export class UploadsService {
@@ -20,9 +42,9 @@ export class UploadsService {
 
   async createMany(
     files: Express.Multer.File[],
-    uploadCategoryName?: UploadCategoryName,
+    uploadCategoryName: UploadCategoryName,
   ): Promise<Upload[]> {
-    if (!files?.length) {
+    if (!files.length) {
       throw new BadRequestException('Invalid file(s)');
     }
     const uploadedFilePromises = files.map((file) =>
@@ -34,14 +56,14 @@ export class UploadsService {
 
   async create(
     file: Express.Multer.File,
-    uploadCategoryName?: UploadCategoryName,
+    uploadCategoryName: UploadCategoryName,
   ): Promise<Upload> {
     const uploadCategory = uploadCategories.find(
       (category) => category.fieldName === uploadCategoryName,
     );
     let resizeInfo: (sharp.OutputInfo & { path: string }) | undefined;
-    if (uploadCategoryName) {
-      if (uploadCategory?.maxWidthHeight) {
+    if (uploadCategory) {
+      if (uploadCategory.maxWidthHeight) {
         resizeInfo = await this.resizeImage(
           file,
           uploadCategory.maxWidthHeight,
@@ -49,14 +71,21 @@ export class UploadsService {
         );
       }
     }
+    const uploadResult = await s3
+      .upload({
+        Bucket: S3PublicBucketName,
+        Body: fs.createReadStream(resizeInfo ? resizeInfo.path : file.path),
+        Key: file.filename,
+      })
+      .promise();
+    const uselessFilesOnDisk = [file.path, resizeInfo?.path];
+    uselessFilesOnDisk.map((filePath) => fs.unlink(filePath ?? '', () => {}));
     const createUploadDto: CreateUploadDto = {
-      path: file.path,
+      path: uploadResult.Location,
       filename: file.originalname,
-      size: file.size,
-      mimeType: file.mimetype,
-      thumbSize: resizeInfo ? resizeInfo.size : undefined,
-      thumbPath: resizeInfo ? resizeInfo.path : undefined,
-      thumbMimeType: resizeInfo ? `image/${resizeInfo.format}` : undefined,
+      size: resizeInfo ? resizeInfo.size : file.size,
+      mimeType: resizeInfo ? `image/${resizeInfo.format}` : file.mimetype,
+      key: file.filename,
     };
     const createdUpload = this.uploadRepository.create(createUploadDto);
 
@@ -66,8 +95,12 @@ export class UploadsService {
   async delete(id: number): Promise<ProcessedDto> {
     const upload = await this.uploadRepository.findOneOrFail(id);
     void this.uploadRepository.delete(id);
-    fs.unlink(upload?.path ?? '', () => {});
-    fs.unlink(upload?.thumbPath ?? '', () => {});
+    await s3
+      .deleteObject({
+        Bucket: S3PublicBucketName,
+        Key: upload.key,
+      })
+      .promise();
 
     return { isProcessed: true };
   }

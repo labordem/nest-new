@@ -17,14 +17,8 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { environment } from './environment';
 
 const globalPrefix = 'api';
-const {
-  apiName,
-  nodeEnv,
-  apiProtocol,
-  apiHost,
-  apiPort,
-  adminPort,
-} = environment;
+const { apiName, nodeEnv, apiProtocol, apiHost, apiPort, adminPort } =
+  environment;
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
