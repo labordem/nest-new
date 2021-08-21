@@ -1,0 +1,764 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>nest-new documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	      <link rel="stylesheet" href="../styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">nest-new documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content miscellaneous-variables">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   
+
+<ol class="breadcrumb">
+  <li>Miscellaneous</li>
+  <li>Variables</li>
+</ol>
+
+<section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <ul class="index-list">
+                        <li>
+                            <a href="#ApiFile" title="src/uploads/decorators/api-file.decorator.ts"><b>ApiFile</b>&nbsp;&nbsp;&nbsp;(src/.../api-file.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ApiFiles" title="src/uploads/decorators/api-files.decorator.ts"><b>ApiFiles</b>&nbsp;&nbsp;&nbsp;(src/.../api-files.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#avatarFileFilter" title="src/uploads/configs/file-filters.config.ts"><b>avatarFileFilter</b>&nbsp;&nbsp;&nbsp;(src/.../file-filters.config.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#connectionOptions" title="src/ormconfig.ts"><b>connectionOptions</b>&nbsp;&nbsp;&nbsp;(src/.../ormconfig.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#environment" title="src/environment.ts"><b>environment</b>&nbsp;&nbsp;&nbsp;(src/.../environment.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#filenameWithSuffixGenerator" title="src/uploads/configs/filename-generators.config.ts"><b>filenameWithSuffixGenerator</b>&nbsp;&nbsp;&nbsp;(src/.../filename-generators.config.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#getCorrectMulterConfig" title="src/uploads/configs/multer.config.ts"><b>getCorrectMulterConfig</b>&nbsp;&nbsp;&nbsp;(src/.../multer.config.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#globalPrefix" title="src/main.ts"><b>globalPrefix</b>&nbsp;&nbsp;&nbsp;(src/.../main.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#imageAllowedMimeTypes" title="src/uploads/configs/file-filters.config.ts"><b>imageAllowedMimeTypes</b>&nbsp;&nbsp;&nbsp;(src/.../file-filters.config.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#mailerOptions" title="src/mailerconfig.ts"><b>mailerOptions</b>&nbsp;&nbsp;&nbsp;(src/.../mailerconfig.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#multerConfig" title="src/uploads/configs/multer.config.ts"><b>multerConfig</b>&nbsp;&nbsp;&nbsp;(src/.../multer.config.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#Roles" title="src/auth/decorators/roles.decorator.ts"><b>Roles</b>&nbsp;&nbsp;&nbsp;(src/.../roles.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#" title="src/main.ts"><b></b>&nbsp;&nbsp;&nbsp;(src/.../main.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#uniqueFilenameGenerator" title="src/uploads/configs/filename-generators.config.ts"><b>uniqueFilenameGenerator</b>&nbsp;&nbsp;&nbsp;(src/.../filename-generators.config.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#uploadCategories" title="src/uploads/configs/multer.config.ts"><b>uploadCategories</b>&nbsp;&nbsp;&nbsp;(src/.../multer.config.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#User" title="src/auth/decorators/user.decorator.ts"><b>User</b>&nbsp;&nbsp;&nbsp;(src/.../user.decorator.ts)</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    <h3>src/uploads/decorators/api-file.decorator.ts</h3>
+    <section>
+    <h3></h3>        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="ApiFile"></a>
+                        <span class="name">
+                            <b>
+                            ApiFile</b>
+                            <a href="#ApiFile"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>(fieldName &#x3D; &#x27;file&#x27;): MethodDecorator &#x3D;&gt; {
+  return applyDecorators(
+    ApiConsumes(&#x27;multipart/form-data&#x27;),
+    ApiBody({
+      schema: {
+        type: &#x27;object&#x27;,
+        properties: {
+          [fieldName]: {
+            description: &#x27;File to upload&#x27;,
+            type: &#x27;string&#x27;,
+            format: &#x27;binary&#x27;,
+          },
+        },
+      },
+    }),
+  );
+}</code>
+                        </td>
+                    </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>Add multipart/form-data OpenApi definitions, for one file upload </p>
+</div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+</section>
+    <h3>src/uploads/decorators/api-files.decorator.ts</h3>
+    <section>
+    <h3></h3>        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="ApiFiles"></a>
+                        <span class="name">
+                            <b>
+                            ApiFiles</b>
+                            <a href="#ApiFiles"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>(fieldName &#x3D; &#x27;file&#x27;): MethodDecorator &#x3D;&gt; {
+  return applyDecorators(
+    ApiConsumes(&#x27;multipart/form-data&#x27;),
+    ApiBody({
+      isArray: true,
+      schema: {
+        type: &#x27;object&#x27;,
+        properties: {
+          [fieldName]: {
+            description: &#x27;Files to uploads&#x27;,
+            type: &#x27;array&#x27;,
+            items: {
+              type: &#x27;string&#x27;,
+              format: &#x27;binary&#x27;,
+            },
+          },
+        },
+      },
+    }),
+  );
+}</code>
+                        </td>
+                    </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>Add multipart/form-data OpenApi definitions, for many files upload </p>
+</div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+</section>
+    <h3>src/uploads/configs/file-filters.config.ts</h3>
+    <section>
+    <h3></h3>        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="avatarFileFilter"></a>
+                        <span class="name">
+                            <b>
+                            avatarFileFilter</b>
+                            <a href="#avatarFileFilter"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>(
+  req: Request,
+  file: Express.Multer.File,
+  callback: (error: Error | null, isAllowed: boolean) &#x3D;&gt; void,
+): void &#x3D;&gt; {
+  const isAllowed &#x3D; imageAllowedMimeTypes?.includes(file.mimetype) ?? false;
+  return callback(
+    isAllowed ? null : new BadRequestException(&#x27;Must be an avatar&#x27;),
+    isAllowed,
+  );
+}</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="imageAllowedMimeTypes"></a>
+                        <span class="name">
+                            <b>
+                            imageAllowedMimeTypes</b>
+                            <a href="#imageAllowedMimeTypes"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code>[]</code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>[&#x27;image/jpg&#x27;, &#x27;image/jpeg&#x27;, &#x27;image/png&#x27;]</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+</section>
+    <h3>src/ormconfig.ts</h3>
+    <section>
+    <h3></h3>        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="connectionOptions"></a>
+                        <span class="name">
+                            <b>
+                            connectionOptions</b>
+                            <a href="#connectionOptions"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code>ConnectionOptions</code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>{
+  type: &#x27;postgres&#x27;,
+  host: environment.dbHost,
+  port: environment.dbPort,
+  username: environment.dbUser,
+  password: environment.dbPassword,
+  database: environment.dbName,
+  entities: [&#x60;${__dirname}/**/*.entity{.ts,.js}&#x60;],
+  // must be set to false once the first release deployed.
+  synchronize: true,
+  migrationsRun: true,
+  logging: true,
+  logger: &#x27;file&#x27;,
+  migrations: [&#x60;${__dirname}/migrations/**/*{.ts,.js}&#x60;],
+  cli: {
+    // should be inside src folder to be compiled into /dist.
+    migrationsDir: &#x27;src/migrations&#x27;,
+  },
+  namingStrategy: new SnakeNamingStrategy(),
+}</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+</section>
+    <h3>src/environment.ts</h3>
+    <section>
+    <h3></h3>        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="environment"></a>
+                        <span class="name">
+                            <b>
+                            environment</b>
+                            <a href="#environment"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/object" target="_blank" >object</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>{
+  nodeEnv: process.env.NODE_ENV as string,
+  projectName: process.env.PROJECT_NAME as string,
+  // API
+  apiName: process.env.API_NAME as string,
+  apiProtocol: process.env.API_PROTOCOL as string,
+  apiHost: process.env.API_HOST as string,
+  apiPort: parseInt((process.env.PORT || process.env.API_PORT) as string, 10),
+  apiAdminEmail: process.env.API_ADMIN_EMAIL as string,
+  apiUserJwtSecret: process.env.API_USER_JWT_SECRET as string,
+  apiUserJwtExpirationTime: process.env.API_USER_JWT_EXPIRATION_TIME as string,
+  apiEmailJwtSecret: process.env.API_EMAIL_JWT_SECRET as string,
+  apiEmailJwtExpirationTime: process.env
+    .API_EMAIL_JWT_EXPIRATION_TIME as string,
+  // API_TRANSPORT
+  apiTransportHost: process.env.API_TRANSPORT_HOST as string,
+  apiTransportPort: parseInt(process.env.API_TRANSPORT_PORT as string, 10),
+  apiTransportUser: process.env.API_TRANSPORT_USER as string,
+  apiTransportPassword: process.env.API_TRANSPORT_PASSWORD as string,
+  apiTransportFrom: process.env.MAIL_API_TRANSPORT_FROM as string,
+  // DB
+  dbHost: process.env.DB_HOST as string,
+  dbPort: parseInt(process.env.DB_PORT as string, 10),
+  dbUser: process.env.DB_USER as string,
+  dbPassword: process.env.DB_PASSWORD as string,
+  dbName: process.env.DB_NAME as string,
+  // ADMIN (for development only)
+  adminPort: parseInt(process.env.ADMIN_PORT as string, 10),
+  // PWA
+  pwaConfirmEmailUrl: process.env.PWA_CONFIRM_EMAIL_URL as string,
+  pwaResetPasswordUrl: process.env.PWA_RESET_PASSWORD_URL as string,
+}</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+</section>
+    <h3>src/uploads/configs/filename-generators.config.ts</h3>
+    <section>
+    <h3></h3>        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="filenameWithSuffixGenerator"></a>
+                        <span class="name">
+                            <b>
+                            filenameWithSuffixGenerator</b>
+                            <a href="#filenameWithSuffixGenerator"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>(
+  filename: string,
+  suffix: string,
+): string &#x3D;&gt; {
+  return &#x60;${filename.substring(
+    0,
+    filename.lastIndexOf(&#x27;.&#x27;),
+  )}${suffix}${filename.substring(filename.lastIndexOf(&#x27;.&#x27;))}&#x60;;
+}</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="uniqueFilenameGenerator"></a>
+                        <span class="name">
+                            <b>
+                            uniqueFilenameGenerator</b>
+                            <a href="#uniqueFilenameGenerator"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>(
+  req: Request,
+  file: Express.Multer.File,
+  callback: (error: Error | null, filename: string) &#x3D;&gt; void,
+): void &#x3D;&gt;
+  callback(null, &#x60;${uuid()}${extname(file.originalname).toLowerCase()}&#x60;)</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+</section>
+    <h3>src/uploads/configs/multer.config.ts</h3>
+    <section>
+    <h3></h3>        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="getCorrectMulterConfig"></a>
+                        <span class="name">
+                            <b>
+                            getCorrectMulterConfig</b>
+                            <a href="#getCorrectMulterConfig"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>(
+  uploadCategory: UploadCategory,
+): MulterOptions &#x3D;&gt; ({
+  limits: {
+    fileSize: uploadCategory.fileSizeLimit,
+    fieldNameSize: uploadCategory.fieldName.length,
+  },
+  storage: diskStorage({
+    destination: uploadCategory.destination,
+    filename: uniqueFilenameGenerator,
+  }),
+  fileFilter: uploadCategory.fileFilter,
+})</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="multerConfig"></a>
+                        <span class="name">
+                            <b>
+                            multerConfig</b>
+                            <a href="#multerConfig"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>(
+  uploadCategoryName: UploadCategoryName,
+): MulterOptions &#x3D;&gt; {
+  const uploadCategory &#x3D; uploadCategories.find(
+    (category) &#x3D;&gt; category.fieldName &#x3D;&#x3D;&#x3D; uploadCategoryName,
+  );
+  if (!uploadCategory) {
+    throw new InternalServerErrorException();
+  }
+  return getCorrectMulterConfig(uploadCategory);
+}</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="uploadCategories"></a>
+                        <span class="name">
+                            <b>
+                            uploadCategories</b>
+                            <a href="#uploadCategories"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="../interfaces/UploadCategory.html" target="_self" >UploadCategory[]</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>[
+  {
+    fieldName: UploadCategoryName.Avatar,
+    destination: &#x27;uploads/public&#x27;,
+    fileSizeLimit: 5 * 1000000, // 5 mb
+    maxWidthHeight: 720,
+    fileFilter: avatarFileFilter,
+  },
+]</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+</section>
+    <h3>src/main.ts</h3>
+    <section>
+    <h3></h3>        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="globalPrefix"></a>
+                        <span class="name">
+                            <b>
+                            globalPrefix</b>
+                            <a href="#globalPrefix"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>&#x27;api&#x27;</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name=""></a>
+                        <span class="name">
+                            <b>
+                            </b>
+                            <a href="#"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>environment</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+</section>
+    <h3>src/mailerconfig.ts</h3>
+    <section>
+    <h3></h3>        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="mailerOptions"></a>
+                        <span class="name">
+                            <b>
+                            mailerOptions</b>
+                            <a href="#mailerOptions"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Type : </i>    <code>MailerOptions</code>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>{
+  transport: {
+    host: environment.apiTransportHost,
+    port: environment.apiTransportPort,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: environment.apiTransportUser,
+      pass: environment.apiTransportPassword,
+    },
+  },
+  defaults: {
+    from: environment.apiTransportFrom, // outgoing email ID
+  },
+  preview: environment.nodeEnv !&#x3D;&#x3D; &#x27;production&#x27;, // preview email in browser, dev only
+  template: {
+    dir: &#x60;${process.cwd()}/templates&#x60;,
+    adapter: new HandlebarsAdapter(),
+    options: {
+      strict: true,
+    },
+  },
+}</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+</section>
+    <h3>src/auth/decorators/roles.decorator.ts</h3>
+    <section>
+    <h3></h3>        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="Roles"></a>
+                        <span class="name">
+                            <b>
+                            Roles</b>
+                            <a href="#Roles"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>(...roles: Role[]): MethodDecorator &#x3D;&gt;
+  applyDecorators(
+    SetMetadata(&#x27;roles&#x27;, roles),
+    UseGuards(JwtAuthGuard, RolesGuard),
+    ApiSecurity(&#x27;bearer&#x27;),
+    ApiUnauthorizedResponse({ description: &#x27;Unauthorized&#x27; }),
+    ApiForbiddenResponse({ description: &#x27;Forbidden resource&#x27; }),
+    ApiOperation({ summary: &#x60;${roles.join(&#x27; or &#x27;)} role needed.&#x60; }),
+  )</code>
+                        </td>
+                    </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description"><p>If this decorator is present then the user needs one of the parameters roles to pass. </p>
+</div>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+</section>
+    <h3>src/auth/decorators/user.decorator.ts</h3>
+    <section>
+    <h3></h3>        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="User"></a>
+                        <span class="name">
+                            <b>
+                            User</b>
+                            <a href="#User"><span class="icon ion-ios-link"></span></a>
+                        </span>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <i>Default value : </i><code>createParamDecorator(
+  (data: unknown, context: ExecutionContext) &#x3D;&gt; {
+    const request &#x3D; context.switchToHttp().getRequest&lt;{ user: Account }&gt;();
+
+    return request.user;
+  },
+)</code>
+                        </td>
+                    </tr>
+
+
+            </tbody>
+        </table>
+</section>
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'miscellaneous-variables';
+            var COMPODOC_CURRENT_PAGE_URL = 'variables.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="../js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -1,0 +1,261 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>nest-new documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="./images/favicon.ico">
+	      <link rel="stylesheet" href="./styles/style.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="./" class="navbar-brand">nest-new documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content getting-started">
+                   <div class="content-data">
+
+<div align="center">
+<p><img src="https://docs.nestjs.com/assets/logo-small.svg" height="152"></p>
+
+<p><a href="http://commitizen.github.io/cz-cli/"><img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg" alt="Commitizen friendly" class="img-responsive"></a>
+<a href="http://conventional-changelog.github.io"><img src="https://img.shields.io/badge/changelog-conventional-brightgreen.svg" alt="Conventional Changelog" class="img-responsive"></a>
+<a href="https://github.com/conventional-changelog/standard-version"><img src="https://img.shields.io/badge/release-standard%20version-brightgreen.svg" alt="Standard Version" class="img-responsive"></a>
+<a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg" alt="code style: prettier" class="img-responsive"></a>
+<a href="https://github.com/airbnb/javascript"><img src="https://img.shields.io/badge/eslint-airbnb-4B32C3.svg" alt="airbnb-style" class="img-responsive"></a></p>
+<p><img src="https://img.shields.io/github/package-json/dependency-version/miaborde/nest-new/@nestjs/core?label=nest&logo=nestjs" alt="nest version" class="img-responsive"></p>
+<p><a href="./docs/uml/README.md">UML</a> - <a href="https://miaborde.github.io/nest-new/compodoc">compodoc</a> - <a href="./CHANGELOG.md">changelog</a></p>
+</div>
+
+<h2 id="get-corresponding-frontend">Get corresponding frontend</h2>
+<p>If you want the full stack you can get corresponding PWA <a href="https://github.com/mIaborde/ng-new">here</a>.</p>
+<h2 id="run-it-in-development">Run it in Development</h2>
+<h3 id="local-nodejs">Local Node.js</h3>
+<p>You can run this project in watch/debug mode in local dev environment, to do so you need <a href="https://nodejs.org">Node.js</a>, and if you do not have <a href="https://docs.docker.com/get-docker/">Docker</a> installed on your machine, you must create the <a href="https://www.postgresql.org/">Postgres</a> database yourself and configure <code>.env.development</code> file according to it.</p>
+<p><strong>Example :</strong></p>
+<div><pre class="line-numbers"><code class="language-bash"># if you want a containerized database
+npm run docker:db
+
+# and in all cases :
+
+# install dependencies
+npm i
+# run in development mode
+npm run start</code></pre></div><h3 id="containerized">Containerized</h3>
+<p>You can run this project in watch/debug mode in fully containerized environment, to do so you just need <a href="https://docs.docker.com/get-docker/">Docker</a> (for linux users you also need <a href="https://docs.docker.com/compose/install/">Docker-compose</a>).</p>
+<p><strong>Example :</strong></p>
+<div><pre class="line-numbers"><code class="language-bash"># with docker only
+docker-compose -f docker-compose.dev.yml --env-file .env.development up --build -V
+docker-compose -f docker-compose.dev.yml --env-file .env.development up
+
+# if you have Docker AND Node.js installed you can use short commands :
+npm run docker:build
+npm run docker</code></pre></div><blockquote>
+<p>When you add a npm package to your project you need to force your container to build.</p>
+</blockquote>
+<h3 id="vscode-debugger">VSCode debugger</h3>
+<p>If you use <a href="https://code.visualstudio.com/">Visual Studio Code</a> you can easily attach a Node.js debugger to this application. All settings are already done in <strong>.vscode</strong> folder.
+Follow this <a href="https://code.visualstudio.com/docs/nodejs/nodejs-debugging">guide</a> to know more.</p>
+<h2 id="run-it-in-production">Run it in Production</h2>
+<p>To run your app in production mode you need to create an <code>.env</code> file (not followed by git), as a copy of <code>.env.development</code> file but with your production variables.</p>
+<h3 id="containerized-1">Containerized</h3>
+<p>You can run this project in production mode in container, to do so you just need <a href="https://docs.docker.com/get-docker/">Docker</a>.</p>
+<p><strong>Example 1 : Node.js container alone</strong></p>
+<div><pre class="line-numbers"><code class="language-bash"># with docker only
+docker build --target production -t nest-new .
+docker run --env-file ./.env -p 3333:3333 --env PORT=3333 --name nest-new nest-new</code></pre></div><p><strong>Example 2 : Production environment</strong></p>
+<div><pre class="line-numbers"><code class="language-bash"># with docker only
+docker-compose -f docker-compose.prod.yml --env-file .env up --scale api=4 --build -V
+docker-compose -f docker-compose.prod.yml --env-file .env up --scale api=4
+
+# if you have Docker AND Node.js installed you can use short commands :
+npm run docker:build:prod
+npm run docker:prod</code></pre></div><h2 id="documentation">Documentation</h2>
+<ul>
+<li><strong>API documentation:</strong> this project use <a href="https://swagger.io/">Swagger</a>, the link appear when you run <code>npm run start</code> command.</li>
+<li><strong>Code documentation</strong> this project use <a href="https://compodoc.app/guides/getting-started.html">Compodoc</a> a documentation tool for Angular &amp; Nestjs applications. It generates a static documentation of your application.</li>
+<li><strong>UML documentation</strong> this project use <a href="https://github.com/eugene-manuilov/typeorm-uml">Typeorm-uml</a> a entity relationship diagram generator for <a href="https://typeorm.io/#/">Typeorm</a>.<blockquote>
+<p><strong>Attention !</strong>
+Under the hood, this library uses <a href="https://plantuml.com">PlantUML</a> to define diagrams and the official plantuml server to draw it. If you work on a project that has a strict security level you can&#39;t use the public server. Read the Typeorm-uml documentation to know more.</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>Example :</strong></p>
+<div><pre class="line-numbers"><code class="language-bash"># api documentation: open your browser and go to doc url (change url according your conf)
+open http://localhost:3000/api/doc
+
+# code documentation: build doc website and open it
+npm run doc
+
+# uml documentation: build diagram and open it
+npm run uml</code></pre></div><h2 id="git-flow">Git flow</h2>
+<p>This project respects <a href="https://github.com/angular/angular/blob/master/CONTRIBUTING.md#commit">Conventional commits</a>, a Git commit convention made by the Angular team. Basically, every pull request should end up with one commit and a standardized commit message.</p>
+<p>To easily respect this a tool is provided: <a href="https://github.com/commitizen/cz-cli">Commitizen</a> called with <code>npm run cz</code> command, you are not obligated to use it, if you make your commits manually they will be tested too.</p>
+<blockquote>
+<p><strong>Attention !</strong>
+Do not commit without a <strong>node_modules</strong> folder at the root of the project (run <code>npm i</code> command to get it), otherwise your commit and your code will not trigger <code>lint</code> / <code>format</code> / <code>cz</code> scripts.</p>
+</blockquote>
+<p><strong>Example :</strong></p>
+<div><pre class="line-numbers"><code class="language-bash"># add your changes
+git add .
+# commit with commitizen-cli
+npm run cz
+# push changes
+git push
+
+# if your commit fail you can perform changes and retry with previous message
+npm run cz -- --retry</code></pre></div><h2 id="database-operations">Database operations</h2>
+<h3 id="postgres-cli">Postgres CLI</h3>
+<p><a href="https://www.postgresql.org/docs/13/app-psql.html">psql</a> is a terminal-based front-end to PostgreSQL. It enables you to type in queries interactively, issue them to PostgreSQL, and see the query results.</p>
+<p><strong>Example :</strong></p>
+<div><pre class="line-numbers"><code class="language-bash"># run psql in db container
+npm run docker:db:psql</code></pre></div><h3 id="migrations">Migrations</h3>
+<p>Migrations provide a way to incrementally update the database schema to keep it in sync with the application&#39;s data model while preserving existing data in the database. To generate, run, and revert migrations, TypeORM provides a dedicated CLI.</p>
+<p><strong>Example :</strong></p>
+<div><pre class="line-numbers"><code class="language-bash"># generate a migration
+npm run migration:generate &lt;MigrationClassNameInPascalCase&gt;
+# run a migration
+npm run migration</code></pre></div><h2 id="create-a-release">Create a release</h2>
+<p>This project respects <a href="https://semver.org">Semantic Versioning</a>.
+To easily respect this specification a tool is provided: <a href="https://github.com/conventional-changelog/standard-version">Standard-version</a>.</p>
+<blockquote>
+<p><strong>Note:</strong> commit or stash any changes before create a release.
+<strong>Note:</strong> Semantic versioning works differently for versions starting with <code>v0.x.x</code>. Everything before <code>v1.0.0</code> is considered experimental and breaking changes are only minor version bumps. The moment you feel comfortable you need to bump the version manually to <code>v1.0.0</code> and then the well-known versioning kicks in where breaking changes bump the major version, features bump the minor and fixes bump the patch version.</p>
+</blockquote>
+<p><strong>Example :</strong></p>
+<div><pre class="line-numbers"><code class="language-bash"># add your changes
+git add .
+
+# release first version of the project (v0.0.0)
+npm run release -- --first-release
+# OR
+# release first stable version of the project (v1.0.0)
+npm run release -- --release-as 1.0.0
+# OR
+# perform a prerelease
+npm run release:prerelease
+# OR
+# perform a release
+npm run release
+
+# push your changes, WITH version tags
+git push --follow-tags</code></pre></div><blockquote>
+<p><strong>When you perform a release you automatically perform the following actions :</strong></p>
+<ul>
+<li>increment version number in <strong>package.json</strong> (uses the <code>fix:</code> and <code>feat:</code> tags to establish the semantic versioning)</li>
+<li>add a <a href="https://git-scm.com/book/en/v2/Git-Basics-Tagging">Git tag</a></li>
+<li>build <a href="#documentation">Documentation</a> in <strong>./docs</strong> folder</li>
+<li>create/update <a href="./CHANGELOG.md">CHANGELOG.md</a></li>
+<li>commit all staged changes with correct commit message</li>
+</ul>
+</blockquote>
+<h2 id="deploy-it">Deploy it</h2>
+<blockquote>
+<p>By default the ORM synchronizes your models with the database, which avoids migration. This is very dangerous in production as this can result in data loss. So when you deploy a production version for the first time it is advisable to disable this option.</p>
+<p><strong>Example :</strong> in your <code>src/ormconfig.ts</code></p>
+<div><pre class="line-numbers"><code class="language-typescript">const connectionOptions: ConnectionOptions = {
+  ...
+  // must be set to false once the first release deployed.
+  synchronize: false,
+  ...
+};</code></pre></div></blockquote>
+<h3 id="heroku">Heroku</h3>
+<ul>
+<li>Create an app on <a href="https://dashboard.heroku.com/apps">Heroku</a></li>
+<li>Set Heroku config vars equals to your production <code>.env</code> file</li>
+<li>create a Procfile, that specifies the commands that are executed by the app on startup : <code>echo &#39;web: NODE_ENV=production node dist/src/main&#39; &gt;&gt; Procfile</code></li>
+<li>Follow Heroku instructions to deploy with git</li>
+</ul>
+<h2 id="make-it-yours">Make it yours</h2>
+<ul>
+<li>Clone this project and move into it</li>
+<li>Reset git history : <code>rm -rf .git &amp;&amp; git init</code></li>
+<li>Run <code>npm ci</code> after reset git history (important for pre-commit hooks)</li>
+<li>Replace ALL <code>nest-new</code> occurrence with your project name</li>
+<li>Replace ALL <code>miaborde</code> occurrence with your Github username</li>
+<li>You&#39;re good to go :)</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 0;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'getting-started';
+            var COMPODOC_CURRENT_PAGE_URL = 'index.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="./js/libs/custom-elements.min.js"></script>
+       <script src="./js/libs/lit-html.js"></script>
+       <!-- Required to polyfill modern browsers as code is ES5 for IE... -->
+       <script src="./js/libs/custom-elements-es5-adapter.js" charset="utf-8" defer></script>
+       <script src="./js/menu-wc.js" defer></script>
+
+       <script src="./js/libs/bootstrap-native.js"></script>
+
+       <script src="./js/libs/es6-shim.min.js"></script>
+       <script src="./js/libs/EventDispatcher.js"></script>
+       <script src="./js/libs/promise.min.js"></script>
+       <script src="./js/libs/zepto.min.js"></script>
+
+       <script src="./js/compodoc.js"></script>
+
+       <script src="./js/tabs.js"></script>
+       <script src="./js/menu.js"></script>
+       <script src="./js/libs/clipboard.min.js"></script>
+       <script src="./js/libs/prism.js"></script>
+       <script src="./js/sourceCode.js"></script>
+          <script src="./js/search/search.js"></script>
+          <script src="./js/search/lunr.min.js"></script>
+          <script src="./js/search/search-lunr.js"></script>
+          <script src="./js/search/search_index.js"></script>
+       <script src="./js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>
