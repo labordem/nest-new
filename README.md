@@ -9,9 +9,13 @@
 
 ![nest version](https://img.shields.io/github/package-json/dependency-version/miaborde/nest-new/@nestjs/core?label=nest&logo=nestjs)
 
-[changelog](./CHANGELOG.md)
+[UML](./docs/uml/README.md) - [compodoc](https://miaborde.github.io/nest-new/compodoc) - [changelog](./CHANGELOG.md)
 
 </div>
+
+## Get corresponding frontend
+
+If you want the full stack you can get corresponding PWA [here](https://github.com/mIaborde/ng-new).
 
 ## Run it in Development
 
@@ -88,6 +92,9 @@ npm run docker:prod
 
 - **API documentation:** this project use [Swagger](https://swagger.io/), the link appear when you run `npm run start` command.
 - **Code documentation** this project use [Compodoc](https://compodoc.app/guides/getting-started.html) a documentation tool for Angular & Nestjs applications. It generates a static documentation of your application.
+- **UML documentation** this project use [Typeorm-uml](https://github.com/eugene-manuilov/typeorm-uml) a entity relationship diagram generator for [Typeorm](https://typeorm.io/#/).
+  > **Attention !**
+  > Under the hood, this library uses [PlantUML](https://plantuml.com) to define diagrams and the official plantuml server to draw it. If you work on a project that has a strict security level you can't use the public server. Read the Typeorm-uml documentation to know more.
 
 **Example :**
 
@@ -97,6 +104,9 @@ open http://localhost:3000/api/doc
 
 # code documentation: build doc website and open it
 npm run doc
+
+# uml documentation: build diagram and open it
+npm run uml
 ```
 
 ## Git flow
@@ -150,10 +160,11 @@ npm run migration
 
 ## Create a release
 
-This project respect [Semantic Versioning](https://semver.org).
+This project respects [Semantic Versioning](https://semver.org).
 To easily respect this specification a tool is provided: [Standard-version](https://github.com/conventional-changelog/standard-version).
 
 > **Note:** commit or stash any changes before create a release.
+> **Note:** Semantic versioning works differently for versions starting with `v0.x.x`. Everything before `v1.0.0` is considered experimental and breaking changes are only minor version bumps. The moment you feel comfortable you need to bump the version manually to `v1.0.0` and then the well-known versioning kicks in where breaking changes bump the major version, features bump the minor and fixes bump the patch version.
 
 **Example :**
 
@@ -161,20 +172,29 @@ To easily respect this specification a tool is provided: [Standard-version](http
 # add your changes
 git add .
 
-# perform release modifications, and commit all staged changes
-npm run release
+# release first version of the project (v0.0.0)
+npm run release -- --first-release
 # OR
-npm run release:alpha
+# release first stable version of the project (v1.0.0)
+npm run release -- --release-as 1.0.0
+# OR
+# perform a prerelease
+npm run release:prerelease
+# OR
+# perform a release
+npm run release
 
-# push your changes, keep version tag
+# push your changes, WITH version tags
 git push --follow-tags
 ```
 
 > **When you perform a release you automatically perform the following actions :**
 >
-> - increment version number in package.json (uses the `fix:` and `feat:` tags to establish the semantic versioning)
-> - add a git tag
-> - update **CHANGELOG.md**
+> - increment version number in **package.json** (uses the `fix:` and `feat:` tags to establish the semantic versioning)
+> - add a [Git tag](https://git-scm.com/book/en/v2/Git-Basics-Tagging)
+> - build [Documentation](#documentation) in **./docs** folder
+> - create/update [CHANGELOG.md](./CHANGELOG.md)
+> - commit all staged changes with correct commit message
 
 ## Deploy it
 

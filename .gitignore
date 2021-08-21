@@ -2,7 +2,6 @@
 
 # environment
 .env
-/docs
 /uploads
 
 # compiled output

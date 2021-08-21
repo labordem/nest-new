@@ -11,6 +11,7 @@
   "scripts": {
     "prebuild": "rimraf dist --no-glob",
     "build": "nest build",
+    "build:docs": "npm run doc:build && npm run uml:build",
     "start": "cross-env NODE_ENV=development nest start --debug 0.0.0.0:9229 --watch",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "test": "jest",
@@ -24,13 +25,16 @@
     "docker:prod": "docker-compose -f docker-compose.prod.yml --env-file .env up --scale api=4",
     "docker:build:prod": "docker-compose -f docker-compose.prod.yml --env-file .env build",
     "cz": "cz",
-    "doc": "compodoc -p tsconfig.json -s -o -d ./docs/compodoc --hideGenerator",
+    "doc": "npm run doc:build -- -s -o",
+    "doc:build": "compodoc -p tsconfig.json -d ./docs/compodoc --hideGenerator --silent",
+    "uml": "cross-env NODE_ENV=development ts-node ./node_modules/.bin/typeorm-uml src/ormconfig.ts --with-enum-values --with-table-names-only",
+    "uml:build": "npm run uml -- --format=png --download=../docs/uml/entity-relationship-diagram.png",
     "typeorm": "cross-env NODE_ENV=development ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config src/ormconfig.ts",
-    "migration": "npm run typeorm -- migration:run",
-    "migration:generate": "npm run typeorm -- migration:generate -n",
-    "migration:revert": "npm run typeorm -- migration:revert",
+    "typeorm:migration": "npm run typeorm -- migration:run",
+    "typeorm:migration:generate": "npm run typeorm -- migration:generate -n",
+    "typeorm:migration:revert": "npm run typeorm -- migration:revert",
     "release": "standard-version --commitAll --releaseCommitMessageFormat \"release: v{{currentTag}}\"",
-    "release:alpha": "standard-version --prerelease alpha --commitAll --releaseCommitMessageFormat \"release: v{{currentTag}}\""
+    "release:prerelease": "npm run release -- --prerelease"
   },
   "config": {
     "commitizen": {
@@ -49,6 +53,11 @@
   "lint-staged": {
     "src/**/*.{js,ts}": "eslint --fix",
     "**/*.{ts,tsx,js,jsx,vue,flow,gql,graphql,html,scss,css,less,json,yaml,yml,md}": "prettier --write"
+  },
+  "standard-version": {
+    "scripts": {
+      "postchangelog": "npm run build:docs && git add docs"
+    }
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.5.1",
@@ -120,6 +129,7 @@
     "ts-loader": "^8.0.8",
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.9.0",
+    "typeorm-uml": "^1.6.4",
     "typescript": "^4.0.5"
   },
   "jest": {
