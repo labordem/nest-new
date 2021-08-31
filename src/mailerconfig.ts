@@ -7,7 +7,7 @@ export const mailerOptions: MailerOptions = {
   transport: {
     host: environment.apiTransportHost,
     port: environment.apiTransportPort,
-    secure: false, // true for 465, false for other ports
+    secure: environment.apiTransportSecure,
     auth: {
       user: environment.apiTransportUser,
       pass: environment.apiTransportPassword,
@@ -18,7 +18,7 @@ export const mailerOptions: MailerOptions = {
   },
   preview: environment.nodeEnv !== 'production', // preview email in browser, dev only
   template: {
-    dir: `${process.cwd()}/templates`,
+    dir: `${process.cwd()}/dist/src/assets/emails`,
     adapter: new HandlebarsAdapter(),
     options: {
       strict: true,

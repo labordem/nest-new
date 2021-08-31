@@ -17,14 +17,6 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { environment } from './environment';
 
 const globalPrefix = 'api';
-const {
-  apiName,
-  nodeEnv,
-  apiProtocol,
-  apiHost,
-  apiPort,
-  adminPort,
-} = environment;
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -40,8 +32,9 @@ async function bootstrap(): Promise<void> {
     prefix: `/${globalPrefix}/uploads/public/`,
   });
 
-  if (nodeEnv === 'development') {
-    const apiTitle = apiName[0].toUpperCase() + apiName.slice(1);
+  if (environment.nodeEnv === 'development') {
+    const apiTitle =
+      environment.apiName[0].toUpperCase() + environment.apiName.slice(1);
     const config = new DocumentBuilder()
       .addSecurity('bearer', { type: 'http', scheme: 'bearer' })
       .setTitle(apiTitle)
@@ -74,15 +67,15 @@ async function bootstrap(): Promise<void> {
     app.enableCors();
   }
 
-  await app.listen(apiPort, () => {
-    Logger.log(`${apiName} run in ${nodeEnv} mode`);
-    if (nodeEnv === 'development') {
+  await app.listen(environment.apiPort, () => {
+    Logger.log(`${environment.apiName} run in ${environment.nodeEnv} mode`);
+    if (environment.nodeEnv === 'development') {
       Logger.log(
-        `[doc] ${apiProtocol}://${apiHost}:${apiPort}/${
-          globalPrefix ? `${globalPrefix}/doc` : 'doc'
-        }`,
+        `[doc] ${environment.apiProtocol}://${environment.apiHost}:${
+          environment.apiPort
+        }/${globalPrefix ? `${globalPrefix}/doc` : 'doc'}`,
       );
-      Logger.log(`[admin] http://localhost:${adminPort}`);
+      Logger.log(`[admin] http://localhost:${environment.adminPort}`);
     }
   });
 }

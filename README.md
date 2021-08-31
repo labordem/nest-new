@@ -153,9 +153,9 @@ Migrations provide a way to incrementally update the database schema to keep it 
 
 ```bash
 # generate a migration
-npm run migration:generate <MigrationClassNameInPascalCase>
+npm run typeorm:migration:generate <MigrationClassNameInPascalCase>
 # run a migration
-npm run migration
+npm run typeorm:migration
 ```
 
 ## Create a release

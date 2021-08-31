@@ -27,7 +27,8 @@ export const environment = {
   apiTransportPort: parseInt(process.env.API_TRANSPORT_PORT as string, 10),
   apiTransportUser: process.env.API_TRANSPORT_USER as string,
   apiTransportPassword: process.env.API_TRANSPORT_PASSWORD as string,
-  apiTransportFrom: process.env.MAIL_API_TRANSPORT_FROM as string,
+  apiTransportFrom: process.env.API_TRANSPORT_FROM as string,
+  apiTransportSecure: process.env.API_TRANSPORT_SECURE === 'true',
   // DB
   dbHost: process.env.DB_HOST as string,
   dbPort: parseInt(process.env.DB_PORT as string, 10),

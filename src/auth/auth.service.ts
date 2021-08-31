@@ -200,7 +200,7 @@ export class AuthService {
     const { accepted } = (await this.mailerService.sendMail({
       to: email,
       subject: `${environment.projectName} - Confirm your email`,
-      template: 'confirm-email',
+      template: './confirm-email',
       context: {
         firstName: account.firstName,
         lastName: account.lastName,
@@ -220,7 +220,7 @@ export class AuthService {
     const { accepted } = (await this.mailerService.sendMail({
       to: accountWithCredentials.email,
       subject: `${environment.projectName} - Reset your password`,
-      template: 'reset-password',
+      template: './reset-password',
       context: {
         firstName: accountWithCredentials.firstName,
         lastName: accountWithCredentials.lastName,
@@ -239,7 +239,7 @@ export class AuthService {
     const { accepted } = (await this.mailerService.sendMail({
       to: email,
       subject: `${environment.projectName} - Password changed`,
-      template: 'password-changed',
+      template: './password-changed',
       context: {
         firstName: account.firstName,
         lastName: account.lastName,

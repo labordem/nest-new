@@ -15,7 +15,6 @@ module.exports = {
     'airbnb-typescript-lite',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
-    'prettier/@typescript-eslint',
     'plugin:prettier/recommended',
   ],
   root: true,
@@ -33,7 +32,7 @@ module.exports = {
     'require-await': 'off',
     'no-return-await': 'error',
     '@typescript-eslint/interface-name-prefix': 'off',
-    '@typescript-eslint/explicit-function-return-type': 'warn',
+    '@typescript-eslint/explicit-function-return-type': 'error',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/prefer-readonly': 'warn',
@@ -43,7 +42,7 @@ module.exports = {
     '@typescript-eslint/lines-between-class-members': 'off',
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-inferrable-types': [
-      'error',
+      'warn',
       {
         ignoreProperties: true,
       },
