@@ -13,9 +13,16 @@
 
 </div>
 
-## Get corresponding frontend
+## Make it yours
 
-If you want the full stack you can get corresponding PWA [here](https://github.com/mIaborde/ng-new).
+- Clone this project and move into it
+- Reset git history : `rm -rf .git && git init`
+- Run `npm ci` after reset git history (important for pre-commit hooks)
+- Replace ALL `nest-new` occurrence with your project name
+- Replace ALL `miaborde` occurrence with your Github username
+- You're good to go :)
+
+> If you want the full stack you can get corresponding PWA [here](https://github.com/mIaborde/ng-new).
 
 ## Run it in Development
 
@@ -214,15 +221,8 @@ git push --follow-tags
 ### Heroku
 
 - Create an app on [Heroku](https://dashboard.heroku.com/apps)
-- Set Heroku config vars equals to your production `.env` file
+- Make production **.env** file : `cp .env.development .env`
+- Complete the **.env** file with your production informations
+- Set Heroku config vars equals to your production `.env` file : `while read line; do heroku config:set "$line"; done < .env`
 - create a Procfile, that specifies the commands that are executed by the app on startup : `echo 'web: NODE_ENV=production node dist/src/main' >> Procfile`
 - Follow Heroku instructions to deploy with git
-
-## Make it yours
-
-- Clone this project and move into it
-- Reset git history : `rm -rf .git && git init`
-- Run `npm ci` after reset git history (important for pre-commit hooks)
-- Replace ALL `nest-new` occurrence with your project name
-- Replace ALL `miaborde` occurrence with your Github username
-- You're good to go :)

@@ -15,7 +15,9 @@ export const environment = {
   apiName: process.env.API_NAME as string,
   apiProtocol: process.env.API_PROTOCOL as string,
   apiHost: process.env.API_HOST as string,
+  /** Used $API_PORT environment variable, or $PORT on some hosting services. */
   apiPort: parseInt((process.env.PORT || process.env.API_PORT) as string, 10),
+  /** If an account is registered with this email then account has Admin role. */
   apiAdminEmail: process.env.API_ADMIN_EMAIL as string,
   apiUserJwtSecret: process.env.API_USER_JWT_SECRET as string,
   apiUserJwtExpirationTime: process.env.API_USER_JWT_EXPIRATION_TIME as string,
@@ -35,7 +37,10 @@ export const environment = {
   dbUser: process.env.DB_USER as string,
   dbPassword: process.env.DB_PASSWORD as string,
   dbName: process.env.DB_NAME as string,
-  // ADMIN (for development only)
+  /** This variable is added by Heroku, if you do not use this service then this variable will not be used. */
+  databaseUrl: process.env.DATABASE_URL,
+  // ADMIN
+  /** This port is used by adminer docker container, in development mode only */
   adminPort: parseInt(process.env.ADMIN_PORT as string, 10),
   // PWA
   pwaConfirmEmailUrl: process.env.PWA_CONFIRM_EMAIL_URL as string,
