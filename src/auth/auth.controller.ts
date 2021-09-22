@@ -8,10 +8,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { JwtPayload } from 'jsonwebtoken';
 
-import { Account } from '../accounts/entities/account.entity';
+import { Account, Role } from '../accounts/entities/account.entity';
 import { ProcessedDto } from '../common/dto/processed.dto';
 import { AuthService } from './auth.service';
+import { Roles } from './decorators/roles.decorator';
 import { User } from './decorators/user.decorator';
 import { LoggedInUserDto } from './dto/logged-in-user.dto';
 import { LoginDto } from './dto/login.dto';
@@ -24,13 +26,23 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  /** Get an Account from jwt. */
+  @Get()
+  @Roles(Role.User)
+  async getAccountFromJwt(@User() user: JwtPayload): Promise<Account> {
+    return this.authService.getAccountFromId(user.id);
+  }
+
   /** Get an Account and a jwt from email/password. */
   @Post('login')
   @HttpCode(200)
   @UseGuards(LocalAuthGuard)
   @ApiBody({ type: LoginDto })
-  async login(@User() account: Account): Promise<LoggedInUserDto> {
-    const jwt = this.authService.createUserToken(account);
+  async login(
+    @User({ isAccount: true }) user: Account,
+  ): Promise<LoggedInUserDto> {
+    const account = user;
+    const jwt = this.authService.createUserToken(user);
 
     return { jwt, account };
   }

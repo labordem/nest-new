@@ -1,4 +1,4 @@
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import {
@@ -24,7 +24,15 @@ async function bootstrap(): Promise<void> {
   app.use(helmet());
   // NestJS execution order : Middleware -> Interceptors -> Route Handler -> Interceptors -> Exception Filter
   app.setGlobalPrefix(globalPrefix);
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      // Show more details in class-validator error object
+      exceptionFactory: (e): BadRequestException => new BadRequestException(e),
+      whitelist: true,
+      transform: true,
+      validationError: { target: false, value: false },
+    }),
+  );
   app.useGlobalInterceptors(new LoggingInterceptor());
   app.useGlobalFilters(new AllExceptionFilter());
 
@@ -32,13 +40,17 @@ async function bootstrap(): Promise<void> {
     prefix: `/${globalPrefix}/uploads/public/`,
   });
 
-  if (environment.nodeEnv === 'development') {
+  if (environment.nodeEnv === 'development' || environment.apiOpenapiEnabled) {
     const apiTitle =
       environment.apiName[0].toUpperCase() + environment.apiName.slice(1);
     const config = new DocumentBuilder()
       .addSecurity('bearer', { type: 'http', scheme: 'bearer' })
       .setTitle(apiTitle)
+      .setDescription('Nestjs API REST starter.')
       .setVersion(version)
+      .addServer(
+        `${environment.apiProtocol}://${environment.apiHost}:${environment.apiPort}`,
+      )
       .build();
     const options: SwaggerDocumentOptions = {
       operationIdFactory: (controllerKey: string, methodKey: string) =>
@@ -63,7 +75,9 @@ async function bootstrap(): Promise<void> {
       document,
       uiOptions,
     );
+  }
 
+  if (environment.nodeEnv === 'development') {
     app.enableCors();
   }
 

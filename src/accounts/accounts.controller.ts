@@ -16,7 +16,9 @@ import { DeleteResult } from 'typeorm';
 
 import { Roles } from '../auth/decorators/roles.decorator';
 import { User } from '../auth/decorators/user.decorator';
+import { UserJwtPayload } from '../auth/models/jwt-payload.model';
 import { ProcessedDto } from '../common/dto/processed.dto';
+import { ExceptionError } from '../common/enums/exception-error.enum';
 import { multerConfig } from '../uploads/configs/multer.config';
 import { ApiFile } from '../uploads/decorators/api-file.decorator';
 import { Upload } from '../uploads/entities/upload.entity';
@@ -33,25 +35,25 @@ export class AccountsController {
 
   @Post()
   @Roles(Role.Admin)
-  async create(@Body() createAccountDto: CreateAccountDto): Promise<Account> {
+  createAccount(@Body() createAccountDto: CreateAccountDto): Promise<Account> {
     return this.accountsService.create(createAccountDto);
   }
 
   @Get()
   @Roles(Role.Admin)
-  findAll(): Promise<Account[]> {
+  findAccounts(): Promise<Account[]> {
     return this.accountsService.findAll();
   }
 
   @Get(':id')
   @Roles(Role.Admin)
-  findOne(@Param('id') id: number): Promise<Account | undefined> {
+  findAccountById(@Param('id') id: number): Promise<Account | undefined> {
     return this.accountsService.findOneById(id);
   }
 
   @Patch(':id')
   @Roles(Role.Admin)
-  update(
+  updateAccount(
     @Param('id') id: number,
     @Body() updateAccountDto: UpdateAccountDto,
   ): Promise<Account> {
@@ -60,40 +62,44 @@ export class AccountsController {
 
   @Delete(':id')
   @Roles(Role.Admin)
-  delete(@Param('id') id: number): Promise<DeleteResult> {
+  deleteAccount(@Param('id') id: number): Promise<DeleteResult> {
     return this.accountsService.delete(id);
   }
 
-  /** Upload an Account avatar, you must be the Account owner */
+  /** Upload an Account avatar, you must be the Account owner. */
   @Post(':id/avatar')
   @Roles(Role.User)
   @ApiFile('file')
   @UseInterceptors(
     FileInterceptor('file', multerConfig(UploadCategoryName.Avatar)),
   )
-  uploadAvatar(
-    @User() account: Account,
+  uploadAccountAvatar(
+    @User() user: UserJwtPayload,
     @Param('id') id: number,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<Upload> {
-    const isOwner = account.id === id;
+    const isOwner = user.id === id;
     if (!isOwner) {
-      throw new ForbiddenException('You must be owner');
+      throw new ForbiddenException({
+        error: ExceptionError.FORBIDDEN_MUST_BE_OWNER,
+      });
     }
 
     return this.accountsService.updateAvatar(id, file);
   }
 
-  /** Delete an Account avatar, you must be the Account owner */
+  /** Delete an Account avatar, you must be the Account owner. */
   @Delete(':id/avatar')
   @Roles(Role.User)
-  deleteAvatar(
-    @User() account: Account,
+  deleteAccountAvatar(
+    @User() user: UserJwtPayload,
     @Param('id') id: number,
   ): Promise<ProcessedDto> {
-    const isOwner = account.id === +id;
+    const isOwner = user.id === +id;
     if (!isOwner) {
-      throw new ForbiddenException('You must be owner');
+      throw new ForbiddenException({
+        error: ExceptionError.FORBIDDEN_MUST_BE_OWNER,
+      });
     }
 
     return this.accountsService.deleteAvatar(id);

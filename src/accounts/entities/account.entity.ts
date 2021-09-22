@@ -80,6 +80,13 @@ export class Account {
   @Column()
   lastName!: string;
 
+  /**
+   * Account bio.
+   * @example 'I love cats and prefer trains to planes.'
+   */
+  @Column({ nullable: true })
+  bio?: string;
+
   @JoinColumn()
   @OneToOne(() => Upload, {
     eager: true,

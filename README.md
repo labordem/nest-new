@@ -19,6 +19,7 @@
 - Reset git history : `rm -rf .git && git init`
 - Run `npm ci` after reset git history (important for pre-commit hooks)
 - Replace ALL `nest-new` occurrence with your project name
+- Replace ALL `Nestjs API REST starter.` occurrence with your project description
 - Replace ALL `miaborde` occurrence with your Github username
 - You're good to go :)
 

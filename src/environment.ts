@@ -7,7 +7,7 @@ dotenv.config({
       : `.env.${process.env.NODE_ENV as string}`,
 });
 
-// It must match your .env file
+/** Variables from your `.env.development` or `.env` file. */
 export const environment = {
   nodeEnv: process.env.NODE_ENV as string,
   projectName: process.env.PROJECT_NAME as string,
@@ -19,6 +19,8 @@ export const environment = {
   apiPort: parseInt((process.env.PORT || process.env.API_PORT) as string, 10),
   /** If an account is registered with this email then account has Admin role. */
   apiAdminEmail: process.env.API_ADMIN_EMAIL as string,
+  /** Enable live documentation in production. */
+  apiOpenapiEnabled: process.env.API_OPENAPI_ENABLED === 'true',
   apiUserJwtSecret: process.env.API_USER_JWT_SECRET as string,
   apiUserJwtExpirationTime: process.env.API_USER_JWT_EXPIRATION_TIME as string,
   apiEmailJwtSecret: process.env.API_EMAIL_JWT_SECRET as string,

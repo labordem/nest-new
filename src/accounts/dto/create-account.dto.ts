@@ -1,4 +1,4 @@
-import { IsEmail, IsString, Length } from 'class-validator';
+import { IsEmail, IsOptional, Length, MaxLength } from 'class-validator';
 
 export class CreateAccountDto {
   /**
@@ -6,14 +6,13 @@ export class CreateAccountDto {
    * @example 'johndoe@email.com'
    */
   @IsEmail()
-  @Length(5, 255)
+  @MaxLength(255)
   email!: string;
 
   /**
    * User first name.
    * @example 'John'
    */
-  @IsString()
   @Length(2, 50)
   firstName!: string;
 
@@ -21,7 +20,6 @@ export class CreateAccountDto {
    * User last name.
    * @example 'Doe'
    */
-  @IsString()
   @Length(2, 50)
   lastName!: string;
 
@@ -29,7 +27,14 @@ export class CreateAccountDto {
    * Login password.
    * @example 'JohnDoePass123'
    */
-  @IsString()
   @Length(8, 255)
   password!: string;
+
+  /**
+   * Account bio.
+   * @example 'I love cats and prefer trains to planes.'
+   */
+  @IsOptional()
+  @Length(1, 255)
+  bio?: string;
 }

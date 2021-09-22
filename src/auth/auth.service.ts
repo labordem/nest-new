@@ -1,17 +1,19 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { verify as compare } from 'argon2';
 import { sign, verify } from 'jsonwebtoken';
+import { getTestMessageUrl, SentMessageInfo } from 'nodemailer';
 
 import { AccountsService } from '../accounts/accounts.service';
 import { CreateAccountDto } from '../accounts/dto/create-account.dto';
 import { Account } from '../accounts/entities/account.entity';
 import { ProcessedDto } from '../common/dto/processed.dto';
+import { ExceptionError } from '../common/enums/exception-error.enum';
 import { environment } from '../environment';
 import { LoginDto } from './dto/login.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -28,20 +30,33 @@ export class AuthService {
     private readonly accountsService: AccountsService,
   ) {}
 
+  async getAccountFromId(id: number): Promise<Account> {
+    const account = await this.accountsService.findOneById(id);
+    if (!account) {
+      throw new NotFoundException();
+    }
+
+    return account;
+  }
+
   async login(loginDto: LoginDto): Promise<Account> {
     const accountWithCredentials = await this.accountsService.findOneByEmail(
       loginDto.email,
       true,
     );
     if (!accountWithCredentials) {
-      throw new UnauthorizedException('Invalid email');
+      throw new BadRequestException({
+        error: ExceptionError.BAD_REQUEST_INVALID_EMAIL,
+      });
     }
     const isPasswordCorrect = await this.isPasswordCorrect(
       accountWithCredentials.password,
       loginDto.password,
     );
     if (!isPasswordCorrect) {
-      throw new UnauthorizedException('Invalid password');
+      throw new BadRequestException({
+        error: ExceptionError.BAD_REQUEST_INVALID_PASSWORD,
+      });
     }
     const { password, email, ...account } = accountWithCredentials;
 
@@ -54,7 +69,9 @@ export class AuthService {
       createAccountDto.email,
     );
     if (foundAccount) {
-      throw new BadRequestException('Email already exists');
+      throw new BadRequestException({
+        error: ExceptionError.BAD_REQUEST_EMAIL_ALREADY_EXISTS,
+      });
     }
     const account = await this.accountsService.create(createAccountDto);
     void this.sendConfirmationEmail(createAccountDto.email, account);
@@ -75,10 +92,14 @@ export class AuthService {
     const payload = this.getPayloadFromEmailToken(emailToken);
     const account = await this.accountsService.findOneById(payload.id);
     if (!account) {
-      throw new UnauthorizedException('Invalid email');
+      throw new BadRequestException({
+        error: ExceptionError.BAD_REQUEST_INVALID_EMAIL,
+      });
     }
     if (account.isConfirmed) {
-      throw new BadRequestException('Email already confirmed');
+      throw new BadRequestException({
+        error: ExceptionError.BAD_REQUEST_EMAIL_ALREADY_CONFIRMED,
+      });
     }
     const confirmedAccount = await this.accountsService.update(account.id, {
       ...account,
@@ -94,7 +115,9 @@ export class AuthService {
       true,
     );
     if (!accountWithCredentials) {
-      throw new UnauthorizedException('Invalid email');
+      throw new BadRequestException({
+        error: ExceptionError.BAD_REQUEST_INVALID_EMAIL,
+      });
     }
     void this.sendResetPasswordEmail(accountWithCredentials);
 
@@ -111,7 +134,7 @@ export class AuthService {
       true,
     );
     if (!accountWithCredentials) {
-      throw new NotFoundException('Account not found');
+      throw new NotFoundException();
     }
     this.getPayloadFromForgotPasswordToken(accountWithCredentials, token);
     const isSamePassword = await this.isPasswordCorrect(
@@ -119,9 +142,9 @@ export class AuthService {
       resetPasswordDto.newPassword,
     );
     if (isSamePassword) {
-      throw new BadRequestException(
-        'New password must be different from current',
-      );
+      throw new BadRequestException({
+        error: ExceptionError.BAD_REQUEST_NEW_PASSWORD_MUST_BE_DIFFERENT,
+      });
     }
     const { email } = accountWithCredentials;
     const account = await this.accountsService.updatePassword(
@@ -197,7 +220,7 @@ export class AuthService {
   ): Promise<ProcessedDto> {
     const emailToken = this.createConfirmEmailToken(account);
     const confirmEmailUrl = `${environment.pwaConfirmEmailUrl}/${emailToken}`;
-    const { accepted } = (await this.mailerService.sendMail({
+    const sentMessageInfo = (await this.mailerService.sendMail({
       to: email,
       subject: `${environment.projectName} - Confirm your email`,
       template: './confirm-email',
@@ -208,8 +231,9 @@ export class AuthService {
         confirmEmailUrl,
       },
     })) as { accepted: string[] };
+    void this.logMessageIfNeeded(sentMessageInfo);
 
-    return { isProcessed: !!accepted };
+    return { isProcessed: !!sentMessageInfo?.accepted };
   }
 
   private async sendResetPasswordEmail(
@@ -217,7 +241,7 @@ export class AuthService {
   ): Promise<ProcessedDto> {
     const emailToken = this.createResetPasswordToken(accountWithCredentials);
     const resetPasswordUrl = `${environment.pwaResetPasswordUrl}/${accountWithCredentials.id}/${emailToken}`;
-    const { accepted } = (await this.mailerService.sendMail({
+    const sentMessageInfo = (await this.mailerService.sendMail({
       to: accountWithCredentials.email,
       subject: `${environment.projectName} - Reset your password`,
       template: './reset-password',
@@ -228,15 +252,16 @@ export class AuthService {
         resetPasswordUrl,
       },
     })) as { accepted: string[] };
+    void this.logMessageIfNeeded(sentMessageInfo);
 
-    return { isProcessed: !!accepted };
+    return { isProcessed: !!sentMessageInfo?.accepted };
   }
 
   private async sendPasswordChangedEmail(
     email: string,
     account: Account,
   ): Promise<ProcessedDto> {
-    const { accepted } = (await this.mailerService.sendMail({
+    const sentMessageInfo = (await this.mailerService.sendMail({
       to: email,
       subject: `${environment.projectName} - Password changed`,
       template: './password-changed',
@@ -246,7 +271,18 @@ export class AuthService {
         projectName: environment.projectName,
       },
     })) as { accepted: string[] };
+    void this.logMessageIfNeeded(sentMessageInfo);
 
-    return { isProcessed: !!accepted };
+    return { isProcessed: !!sentMessageInfo?.accepted };
+  }
+
+  private logMessageIfNeeded(sentMessageInfo: SentMessageInfo): void {
+    if (
+      environment.nodeEnv === 'development' &&
+      environment.apiTransportHost.endsWith('ethereal.email')
+    ) {
+      const previewUrl = getTestMessageUrl(sentMessageInfo);
+      Logger.log(previewUrl);
+    }
   }
 }

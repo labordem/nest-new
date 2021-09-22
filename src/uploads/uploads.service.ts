@@ -5,6 +5,7 @@ import * as sharp from 'sharp';
 import { Repository } from 'typeorm';
 
 import { ProcessedDto } from '../common/dto/processed.dto';
+import { ExceptionError } from '../common/enums/exception-error.enum';
 import { filenameWithSuffixGenerator } from './configs/filename-generators.config';
 import { uploadCategories } from './configs/multer.config';
 import { CreateUploadDto } from './dto/create-upload.dto';
@@ -23,7 +24,9 @@ export class UploadsService {
     uploadCategoryName?: UploadCategoryName,
   ): Promise<Upload[]> {
     if (!files?.length) {
-      throw new BadRequestException('Invalid file(s)');
+      throw new BadRequestException({
+        error: ExceptionError.BAD_REQUEST_INVALID_FILES,
+      });
     }
     const uploadedFilePromises = files.map((file) =>
       this.create(file, uploadCategoryName),
