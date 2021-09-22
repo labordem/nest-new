@@ -1,21 +1,20 @@
 FROM node:14.16.0-alpine AS development
-WORKDIR /app
-COPY package*.json ./
 ENV NODE_ENV=development
-COPY . .
+WORKDIR /app
 RUN chown -R node:node /app
 USER node
-RUN npm ci
+COPY package*.json ./
+RUN npm ci --include=dev
+COPY . .
 RUN npm run build
 
 FROM node:14.16.0-alpine AS production
-RUN apk add dumb-init
-WORKDIR /app
-COPY package*.json ./
 ENV NODE_ENV=production
-COPY --from=development /app/dist /app/dist
-EXPOSE $PORT
+WORKDIR /app
 RUN chown -R node:node /app
 USER node
-RUN npm ci --production
-CMD ["dumb-init", "node", "dist/src/main"]
+COPY package*.json ./
+COPY --from=development /app/dist /app/dist
+RUN npm ci --omit=dev
+EXPOSE $PORT
+CMD ["node", "dist/src/main"]

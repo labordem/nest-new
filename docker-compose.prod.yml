@@ -2,7 +2,8 @@ version: '3.7'
 
 networks:
   default:
-    name: ${PROJECT_NAME}
+    external:
+      name: ${PROJECT_NAME}
 
 volumes:
   pgdata:
